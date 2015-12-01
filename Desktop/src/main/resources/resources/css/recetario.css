@@ -1,0 +1,13 @@
+/* Error page css
+*/
+body.error {
+    font-family:monospace;
+    color: red;
+}
+body.error pre {
+    word-wrap: normal;
+}
+
+body {
+    font-family:sans-serif;
+}
