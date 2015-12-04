@@ -1,0 +1,26 @@
+<h1>First run</h1>
+<p>
+    Configure the essentials to run the Recetario app.
+</p>
+<form method="post" action="/FirstRun" name="ffirstrun">
+    <label for="portable">Portable Device<input type="checkbox" id="portable" name="portable" value="S"/></label><br>
+    <label for="bbddFolder">BBDD folder<input type="text" id="bbddFolder" name="bbddFolder" value="{defaultFolderValue}"/></label><br>
+    <input type="hidden" name="post" value="1"/>
+    <input type="hidden" name="initialResource" value="{initialResource}"/>
+    <input type="submit" value="Save Changes">
+</form>
+<section id="error" class="error"></section>
+<script>
+    // The data folder is always in the same directory than the application for portable use.
+    var checkbox = document.getElementById("portable");
+    checkbox.addEventListener("change", function ( event ) {
+        document.getElementById("bbddFolder").disabled = this.checked;
+        document.getElementById("bbddFolder").required = !this.checked;
+        });
+        
+    var errorMessage = '{errorMessage}';
+    if ( errorMessage )
+    {
+        document.getElementById('error').innerHTML = errorMessage;
+    }
+</script>

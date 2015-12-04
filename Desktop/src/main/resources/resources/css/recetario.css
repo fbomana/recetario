@@ -1,3 +1,20 @@
+/* Normal pages
+*/
+body {
+    font-family:sans-serif;
+}
+input[type='text']:valid {
+    border: 1px solid green;
+    background: greenyellow;    
+}
+input[type='text']:invalid {
+    border: 1px solid red;
+    background: pink;
+}
+secction.error {
+    color: red;
+}
+
 /* Error page css
 */
 body.error {
@@ -6,8 +23,4 @@ body.error {
 }
 body.error pre {
     word-wrap: normal;
-}
-
-body {
-    font-family:sans-serif;
 }

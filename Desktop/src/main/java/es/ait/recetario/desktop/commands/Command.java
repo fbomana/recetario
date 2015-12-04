@@ -5,6 +5,7 @@
  */
 package es.ait.recetario.desktop.commands;
 
+import es.ait.recetario.desktop.preferences.Preferences;
 import java.io.IOException;
 import java.io.PrintWriter;
 import javax.servlet.ServletException;
@@ -17,5 +18,34 @@ import javax.servlet.http.HttpServletResponse;
  */
 public abstract class Command
 {
+    protected Preferences preferences;
+    
+    public void handle( HttpServletRequest request, HttpServletResponse response, PrintWriter out ) throws IOException, ServletException
+    {
+        preferences = Preferences.getInstance();
+        if ( preferences.isFirstRun() )
+        {
+            preferences.setFirstRun( false );
+            try
+            {
+                forward("/FirstRun", request, response, out );
+            }
+            catch ( ClassNotFoundException | InstantiationException | IllegalAccessException  e ) 
+            {
+                throw new ServletException( e );
+            }
+        }
+        else
+        {
+            processRequest( request, response, out );
+        }
+    }
+    
+    protected void forward ( String resource, HttpServletRequest request, HttpServletResponse response, PrintWriter out ) throws ClassNotFoundException,
+            InstantiationException, IllegalAccessException, IOException, ServletException
+    {
+        CommandFactory.getCommand( resource ).handle( request, response, out );
+    }
+    
     public abstract void processRequest( HttpServletRequest request, HttpServletResponse response, PrintWriter out ) throws IOException, ServletException;
 }

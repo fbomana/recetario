@@ -2,8 +2,6 @@ package es.ait.recetario.desktop.handlers;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.PrintWriter;
 import javax.servlet.ServletException;
 import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletRequest;
@@ -35,11 +33,19 @@ public class StaticHandler implements BaseHandler
         {
             out = response.getOutputStream();
             is = getClass().getResourceAsStream("/resources" + resource );
-            byte[] buffer = new byte[4096];
-            int read;
-            while ( ( read = is.read(buffer)) > 0 )
+            if ( is != null )
             {
-                out.write( buffer, 0, read );
+                byte[] buffer = new byte[4096];
+                int read;
+                while ( ( read = is.read(buffer)) > 0 )
+                {
+                    out.write( buffer, 0, read );
+                }
+            }
+            else
+            {
+                System.out.println("Resource not found:" + resource );
+                response.setStatus( HttpServletResponse.SC_NOT_FOUND );    
             }
         }
         finally

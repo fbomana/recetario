@@ -23,7 +23,7 @@ public class CommandHandler implements BaseHandler
 {
 
     @Override
-    public void handle(String resource, HttpServletRequest request, HttpServletResponse response ) throws IOException, ServletException
+    public void handle( String resource, HttpServletRequest request, HttpServletResponse response ) throws IOException, ServletException
     {
         
         Command command = null;
@@ -32,7 +32,7 @@ public class CommandHandler implements BaseHandler
         {
             out = response.getWriter();
             command = CommandFactory.getCommand( resource );
-            command.processRequest( request, response, out );
+            command.handle( request, response, out );
         }
         catch ( Exception e )
         {

@@ -15,5 +15,7 @@ hs_err_pid*
 .directory
 
 # Maven
-
 Desktop/target
+
+# Run Byproducts
+Desktop/derby.log
