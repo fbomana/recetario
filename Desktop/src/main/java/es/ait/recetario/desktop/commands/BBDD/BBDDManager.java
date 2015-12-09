@@ -168,9 +168,9 @@ public class BBDDManager
         try ( PreparedStatement ps = connection.prepareStatement("select app_version from version");
             ResultSet rset = ps.executeQuery())
         {
-            if ( rs.next() )
+            if ( rset.next() )
             {
-                String version = rs.getString(1);
+                String version = rset.getString(1);
                 for ( int i = 0; i < versions.length; i ++ )
                 {
                     if ( versions[i].equals( version ))

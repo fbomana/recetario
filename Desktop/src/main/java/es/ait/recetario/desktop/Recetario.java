@@ -58,9 +58,14 @@ public class Recetario implements ActionListener
        
         // Create a pop-up menu components
         MenuItem aboutItem = new MenuItem("About");
-        MenuItem recipesItem = new MenuItem("Ver recetas");
+        MenuItem recipesItem = new MenuItem("Show Recipes");
         recipesItem.setName("recipes");
         recipesItem.addActionListener( this );
+
+        MenuItem newRecipeItem = new MenuItem("New Recipe");
+        newRecipeItem.setName("newRecipe");
+        newRecipeItem.addActionListener( this );
+        
         MenuItem exitItem = new MenuItem("Exit");
         exitItem.setName("exit");
         exitItem.addActionListener( this );
@@ -69,6 +74,7 @@ public class Recetario implements ActionListener
         popup.add( aboutItem );
         popup.addSeparator();
         popup.add( recipesItem );
+        popup.add( newRecipeItem );
         popup.addSeparator();
         popup.add( exitItem );
        
@@ -117,6 +123,9 @@ public class Recetario implements ActionListener
                     break;
                 case "recipes":
                     Utils.browse("http://localhost:" + port + "/recipes/SearchRecipes");
+                    break;
+                case "newRecipe":
+                    Utils.browse("http://localhost:" + port + "/recipes/NewRecipe");
                     break;
             }
         }

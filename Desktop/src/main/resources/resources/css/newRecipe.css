@@ -1,0 +1,39 @@
+/* 
+    Created on : 05-dic-2015, 16:41:37
+    Author     : aitkiar
+*/
+
+#formSection {
+    width: 50%;
+    height: 100%;
+    float:left;
+}
+
+#previewSection {
+    width: 50%;
+    height: 100%;
+    float:right;
+}
+
+div.contentBox {
+    padding:1em;
+}
+
+input[type='text'] {
+    width:100%;
+}
+textarea {
+    width:100%;
+    height: auto;
+}
+
+#preview {
+  position:absolute;
+  display:block;
+  vertical-align: top;
+  margin-left:2em;
+  margin-top:6em;
+  overflow: auto;
+  border:1px solid blue;
+  background-color:#efefff;
+}

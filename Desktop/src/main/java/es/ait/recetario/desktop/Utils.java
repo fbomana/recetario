@@ -11,6 +11,8 @@ import java.io.IOException;
 import java.io.PrintStream;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  *
@@ -78,6 +80,12 @@ public class Utils
                 + "</html>";
     }
     
+    /**
+     * Opens the url in the default system browser.
+     * @param url the url open.
+     * @throws IOException if security restrictions doesn't allow to open external browser.
+     * @throws URISyntaxException if the url isn't properly constructed.
+     */
     public static void browse( String url ) throws IOException, URISyntaxException
     {
         Desktop desktop = Desktop.isDesktopSupported() ? Desktop.getDesktop() : null;
@@ -89,5 +97,28 @@ public class Utils
         {
             new ProcessBuilder("x-www-browser", url).start();
         }
+    }
+    
+    /**
+     * Splits a coma separated lists and retruns a List containing al not void parts
+     * trimmed and lowercased.
+     * @param string the string to split.
+     * @return Tre list. An empty list is returned if there are no coma separated tags.
+     */
+    public static List<String> string2tags( String string )
+    {
+        List<String> result = new ArrayList<>();
+        if ( string != null )
+        {
+            String[] tags = string.split(",");
+            for ( String tag : tags )
+            {
+                if ( !"".equals( tag.trim()))
+                {
+                    result.add( tag.trim().toLowerCase());
+                }
+            }
+        }
+        return result;
     }
 }
