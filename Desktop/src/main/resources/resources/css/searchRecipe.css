@@ -1,0 +1,25 @@
+body {
+    margin:1em;
+}
+
+div#recipes {
+    padding-left:1em;
+}
+div.recipe {
+    width:80%;
+    padding:0.9em;
+    color:darkgrey;
+    font-size:1em;
+    border-bottom: 2px dotted lightgrey;
+        
+}
+
+div.recipe a {
+    font-weight: bold;
+    font-size:1.2em;
+}
+
+div.recipe span {
+    float:right;
+}
+

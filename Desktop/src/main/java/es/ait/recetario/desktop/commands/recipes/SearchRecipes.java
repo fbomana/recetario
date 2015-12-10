@@ -1,16 +1,17 @@
 package es.ait.recetario.desktop.commands.recipes;
 
 
-import es.ait.recetario.desktop.Utils;
 import es.ait.recetario.desktop.commands.Command;
+import es.ait.recetario.desktop.templates.TemplateFactory;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.util.Properties;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 /**
- * This command shows all recipes and the tags ordered by tag density.
+ * This command shows all recipes ordered by last update
  * 
  * @author aitkiar
  */
@@ -19,7 +20,8 @@ public class SearchRecipes extends Command
     @Override
     public void processRequest(HttpServletRequest request, HttpServletResponse response, PrintWriter out) throws IOException, ServletException
     {
-        out.print( Utils.contentsToHtml("Todas las recetas"));
+        Properties properties = new Properties();
+        out.print( TemplateFactory.getTemplate( "searchRecipes.html", properties ));
     }
     
 }

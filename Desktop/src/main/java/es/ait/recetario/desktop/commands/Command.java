@@ -48,4 +48,9 @@ public abstract class Command
     }
     
     public abstract void processRequest( HttpServletRequest request, HttpServletResponse response, PrintWriter out ) throws IOException, ServletException;
+    
+    public String getContentType( String source )
+    {
+        return "text/html;charset=utf-8";
+    }
 }

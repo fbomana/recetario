@@ -5,8 +5,13 @@
  */
 package es.ait.recetario.desktop.model;
 
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Date;
+import javax.json.Json;
+import javax.json.JsonArrayBuilder;
+import javax.json.JsonObject;
 
 /**
  *
@@ -115,5 +120,47 @@ public class Recipe
     public void setTags(List<String> tags)
     {
         this.tags = tags;
+    }
+    
+    /**
+     * Adds a tag to a recipe.
+     * @param tag 
+     */
+    public void addTag( String tag )
+    {
+        if ( tags == null )
+        {
+            tags = new ArrayList<String>();
+        }
+        if ( !tags.contains( tag ))
+        {
+            tags.add( tag );
+        }
+    }
+    
+    /**
+     * Returns a JsonObject representing the object in BBDD.
+     * @return 
+     */
+    public JsonObject toJSON()
+    {
+        SimpleDateFormat sdf = new SimpleDateFormat( "dd/MM/yyyy HH:mm:ss");
+        JsonArrayBuilder builder = Json.createArrayBuilder();
+        if ( tags != null )
+        {
+            for ( String tag : tags )
+            {
+                builder = builder.add( tag );
+            }
+        }
+        return Json.createObjectBuilder()
+            .add("id", recipeId )
+            .add("title", recipeTitle )
+            .add("recipe", recipe != null ? recipe : "")
+            .add("date", sdf.format( recipeDate ))
+            .add("update", sdf.format( recipeUpdate ))
+            .add("tags", builder.build())
+            .build();
+                
     }
 }

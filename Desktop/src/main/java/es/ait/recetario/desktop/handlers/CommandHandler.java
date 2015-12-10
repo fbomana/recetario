@@ -43,5 +43,18 @@ public class CommandHandler implements BaseHandler
             out.close();
         }
     }
+
+    @Override
+    public String getContentType(String resource, HttpServletRequest request, HttpServletResponse response) throws ServletException
+    {
+        try
+        {
+            return CommandFactory.getCommand( resource ).getContentType(resource);
+        }
+        catch ( Exception e )
+        {
+            throw new ServletException( e );
+        }
+    }
     
 }

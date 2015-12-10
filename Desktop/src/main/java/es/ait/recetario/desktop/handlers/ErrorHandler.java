@@ -26,4 +26,10 @@ public class ErrorHandler implements BaseHandler
         out.println("<!DOCTYPE html><html><head><tittle>Error</title></head><body><h1>Error:</h1>Don't know how to handle: <b>" + url + "</b></body></html>");
         out.close();
     }    
+
+    @Override
+    public String getContentType(String resource, HttpServletRequest request, HttpServletResponse response)
+    {
+        return "text/html;charset=utf-8";
+    }
 }

@@ -1,5 +1,6 @@
 package es.ait.recetario.desktop.handlers;
 
+import es.ait.recetario.desktop.Utils;
 import java.io.IOException;
 import java.io.InputStream;
 import javax.servlet.ServletException;
@@ -56,6 +57,34 @@ public class StaticHandler implements BaseHandler
             }
             out.close();
         }
+    }
+
+    @Override
+    public String getContentType(String resource, HttpServletRequest request, HttpServletResponse response)
+    {
+        String contentType = "";
+        switch ( Utils.getExtenxion( resource ))
+        {
+            case "gif":
+                contentType = "image/gif";
+                break;
+            case "png":
+                contentType = "image/png";
+                break;
+            case "jpg":
+                contentType = "image/jpeg";
+                break;
+            case "js":
+                contentType = "text/javascript;charset=utf-8;";
+                break;
+            case "css":
+                contentType = "text/css;charset=utf-8;";
+                break;
+            default:
+                contentType = "text/html;charset=utf-8";
+                break;               
+        }
+        return contentType;
     }
     
 }

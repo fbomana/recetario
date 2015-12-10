@@ -1,0 +1,122 @@
+<link rel="stylesheet" href="/css/searchRecipe.css">
+<section>
+<form method="post" action="/recipes/SearchRecipes">
+    <label for="tags">Tags:
+        <input type="text" value="" id="tags" name="tags" pattern="(?:[a-zA-Z0-9\-_]+(?:\s*,\s*[a-zA-Z0-9\-_]+))*"/>
+    </label>
+    <select id="availableTags">
+    </select>
+</form>
+</section>
+<section>
+    <h1>Recipes</h1>
+    <div id="recipes">
+        
+    </div>
+</section>
+
+<script>
+    window.onload = searchRecipes();
+    
+    function searchRecipes( id )
+    {
+        disableForm();
+        
+        var xhr = new XMLHttpRequest();
+        var params = "";
+        
+        if ( id )
+        {
+            params += "id=" + encodeURIComponent( id );
+        }
+        else
+        {
+            var tags = document.getElementById( "tags" ).value;
+            if ( tags )
+            {
+                params += "tags=" + encodeURIComponent( tags );
+            }
+        }
+        xhr.open('post', '/services/RecipeSearch');
+        xhr.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+        xhr.setRequestHeader("Content-length", params.length);
+        xhr.setRequestHeader("Connection", "close");
+
+        // Track the state changes of the request.
+        xhr.onreadystatechange = function () 
+        {
+            var DONE = 4;
+            var OK = 200;
+            if (xhr.readyState === DONE) 
+            {
+                if (xhr.status === OK) 
+                {
+                    printRecipeList( JSON.parse( xhr.responseText ));
+                } 
+                else 
+                {
+                    alert('Error: ' + xhr.status);
+                }
+                enableForm();
+            }
+        };
+        xhr.send( params );
+    }
+    
+    function disableForm()
+    {
+        document.getElementById("tags").disabled = true;
+        document.getElementById("availableTags").disabled = true;
+    }
+    
+    function enableForm()
+    {
+        document.getElementById("tags").disabled = false;
+        document.getElementById("availableTags").disabled = false;
+    }
+    
+    function printRecipeList( recipes )
+    {
+        var div = document.getElementById('recipes');
+        while(div.firstChild)
+        {
+            div.removeChild(div.firstChild);
+        }
+        var i = 0;
+        while ( i < recipes.length )
+        {
+            div.appendChild ( printRecipe( recipes[i]));
+            i++;
+        }
+    }
+    
+    function printRecipe( recipe )
+    {
+        var div = document.createElement("div");
+        div.className="recipe";
+        
+        var enlace = document.createElement("a");
+        enlace.href="javascript:showRecipe(" + recipe.id + ");";
+        enlace.appendChild( document.createTextNode( recipe.title ) );
+        div.appendChild( enlace );
+        
+        div.appendChild( document.createElement( "br"));
+        
+        var tagsText = "Tags: ";
+        for ( var i = 0; i < recipe.tags.length; i ++ )
+        {
+            if ( i !== 0 )
+            {
+                tagsText += ", ";
+            }
+            tagsText += recipe.tags[i];
+        }
+        div.appendChild( document.createTextNode( tagsText ));
+        var span = document.createElement("span");
+        span.className="right";
+        span.appendChild( document.createTextNode("Update: " + recipe.update ));
+        div.appendChild( span );
+        return div;
+    }
+    
+</script>

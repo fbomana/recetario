@@ -12,13 +12,23 @@ body {
     margin:0px;
 }
 
-input[type='text'] {
-    padding: 0.2em;
+a {
+    color:black;
+    text-decoration: none;
+}
+a:hover {
+    color:maroon;
+    text-decoration: underline;
 }
 
 /*
  * Forms
  */
+
+input[type='text'] {
+    padding: 0.2em;
+}
+
 input[type='text']:valid {
     border: 1px solid green;
     background: greenyellow;
@@ -41,6 +51,7 @@ textarea:invalid {
     border: 1px solid red;
     background: pink;    
 }
+
 secction.error {
     color: red;
 }

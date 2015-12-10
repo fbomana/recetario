@@ -6,9 +6,7 @@
 package es.ait.recetario.desktop.handlers;
 
 import java.io.IOException;
-import java.io.PrintWriter;
 import javax.servlet.ServletException;
-import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
@@ -18,5 +16,7 @@ import javax.servlet.http.HttpServletResponse;
  */
 public interface BaseHandler
 {
-    public abstract void handle( String resource, HttpServletRequest request, HttpServletResponse response ) throws IOException, ServletException;
+    public void handle( String resource, HttpServletRequest request, HttpServletResponse response ) throws IOException, ServletException;
+    
+    public String getContentType( String resource, HttpServletRequest request, HttpServletResponse response ) throws ServletException;
 }
