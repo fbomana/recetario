@@ -8,31 +8,41 @@ package es.ait.recetario.desktop;
 import es.ait.recetario.desktop.commands.BBDD.BBDDManager;
 import es.ait.recetario.desktop.handlers.RecetarioHandler;
 import es.ait.recetario.desktop.preferences.Preferences;
-import java.awt.AWTException;
-import java.awt.Image;
-import java.awt.MenuItem;
-import java.awt.PopupMenu;
-import java.awt.SystemTray;
-import java.awt.TrayIcon;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.io.IOException;
 import java.sql.SQLException;
-import javax.imageio.ImageIO;
 import org.eclipse.jetty.server.Server;
 
 /**
  *
  * @author aitkiar
  */
-public class Recetario implements ActionListener
+public class Recetario
 {
     private Server server;
     private int port = 8080;
     
-    private Image readImage() throws IOException
+
+    public String getPort()
     {
-        return ImageIO.read( getClass().getResourceAsStream("/resources/img/icon.png"));
+        return "" + port;
+    }
+    
+    /**
+     * Supports systemtray icon in all windows and in all linux except gnome and kde plasma 5
+     * @return 
+     */
+    public boolean isIconAvailable()
+    {
+        String os = System.getProperty("os.name").toLowerCase();
+        if ( os.contains("windows") )
+        {
+            return true;
+        }
+        if ( !System.getenv("XDG_CURRENT_DESKTOP").toLowerCase().contains("GNOME"))
+        {
+            return !"kde".equals( System.getenv("XDG_CURRENT_DESKTOP").toLowerCase()) || !"5".equals( System.getenv("KDE_SESSION_VERSION"));
+        }
+        return false;
+        
     }
     
     public void starServer() throws Exception
@@ -42,97 +52,6 @@ public class Recetario implements ActionListener
         server.start();
         server.dumpStdErr();
         server.join();
-    }
-
-    public void enableSystemTray() throws Exception
-    {
-        //Check the SystemTray is supported
-        if (!SystemTray.isSupported()) 
-        {
-            throw new Exception("SystemTray not supported");
-        }
-        final PopupMenu popup = new PopupMenu();
-        final TrayIcon trayIcon = new TrayIcon( readImage (), "Recetario");
-        trayIcon.setImageAutoSize( true );
-        final SystemTray tray = SystemTray.getSystemTray();
-       
-        // Create a pop-up menu components
-        MenuItem aboutItem = new MenuItem("About");
-        MenuItem recipesItem = new MenuItem("Show Recipes");
-        recipesItem.setName("recipes");
-        recipesItem.addActionListener( this );
-
-        MenuItem newRecipeItem = new MenuItem("New Recipe");
-        newRecipeItem.setName("newRecipe");
-        newRecipeItem.addActionListener( this );
-        
-        MenuItem exitItem = new MenuItem("Exit");
-        exitItem.setName("exit");
-        exitItem.addActionListener( this );
-       
-        //Add components to pop-up menu
-        popup.add( aboutItem );
-        popup.addSeparator();
-        popup.add( recipesItem );
-        popup.add( newRecipeItem );
-        popup.addSeparator();
-        popup.add( exitItem );
-       
-        trayIcon.setPopupMenu( popup );
-       
-        try 
-        {
-            tray.add(trayIcon);
-        } 
-        catch (AWTException e) 
-        {
-            System.out.println("TrayIcon could not be added.");
-            server.stop();
-            System.exit(0);
-        }
-    }
-
-    @Override
-    public void actionPerformed( ActionEvent event )
-    {
-        try
-        {
-            switch ( ((MenuItem)event.getSource()).getName())
-            {
-                case "exit":
-                    if ( server != null )
-                    {
-                        try
-                        {
-                            System.out.println("------------------------------------------------------------------");
-                            try
-                            {
-                                BBDDManager.getInstance(Preferences.getInstance().getDerbyFolder()).shutDown();
-                            }
-                            catch ( Exception e )
-                            {
-                            }
-                            server.stop();
-                            System.exit(0);
-                        }
-                        catch ( Exception e )
-                        {
-                            e.printStackTrace();
-                        }
-                    }
-                    break;
-                case "recipes":
-                    Utils.browse("http://localhost:" + port + "/recipes/SearchRecipes");
-                    break;
-                case "newRecipe":
-                    Utils.browse("http://localhost:" + port + "/recipes/NewRecipe");
-                    break;
-            }
-        }
-        catch ( Exception e )
-        {
-            e.printStackTrace();
-        }
     }
     
     private void startBBDD() throws SQLException
@@ -144,6 +63,30 @@ public class Recetario implements ActionListener
         }
     }
     
+    public void exit()
+    {
+        if ( server != null )
+        {
+            try
+            {
+                System.out.println("------------------------------------------------------------------");
+                try
+                {
+                    BBDDManager.getInstance(Preferences.getInstance().getDerbyFolder()).shutDown();
+                }
+                catch ( Exception e )
+                {
+                }
+                server.stop();
+                System.exit(0);
+            }
+            catch ( Exception e )
+            {
+                e.printStackTrace();
+            }
+        }
+    }
+        
     public static void main( String args[])
     {
         Recetario recetario = null;
@@ -151,12 +94,21 @@ public class Recetario implements ActionListener
         {
             recetario = new Recetario();
             recetario.startBBDD();
-            recetario.enableSystemTray();
+            if ( recetario.isIconAvailable() )
+            {
+                RecetarioIcon icon = new RecetarioIcon(recetario);
+                icon.enableSystemTray();
+            }
+            else
+            {
+                RecetarioDesktop.showRecetario( recetario );
+            }
             recetario.starServer();
         }
         catch ( Exception e )
         {
             e.printStackTrace();
+            recetario.exit();
         }
     }
 }
