@@ -8,8 +8,7 @@ package es.ait.recetario.desktop.commands.services;
 import es.ait.recetario.desktop.Utils;
 import es.ait.recetario.desktop.commands.BBDD.BBDDManager;
 import es.ait.recetario.desktop.commands.JSONServiceCommand;
-import es.ait.recetario.desktop.model.Recipe;
-import es.ait.recetario.desktop.model.RecipeDAO;
+import es.ait.recetario.desktop.model.TagDAO;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.sql.Connection;
@@ -21,24 +20,25 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 /**
- *
+ * Service that searchs for the list of tags that are not already included in the
+ * search parameter.
  * @author aitkiar
  */
-public class RecipeSearch extends JSONServiceCommand
+public class TagSearch extends JSONServiceCommand
 {
 
     @Override
     public void processRequest(HttpServletRequest request, HttpServletResponse response, PrintWriter out) throws IOException, ServletException
     {
-        List<String> tags = Utils.string2tags( request.getParameter("tags"));
+        List<String> excludedTags = Utils.string2tags( request.getParameter("tags"));
         try
             ( Connection connection = BBDDManager.getInstance("").getConnection())
         {
-            List<Recipe> recipes = new RecipeDAO().search( connection, tags );
+            List<String> tags = new TagDAO().searchTags(connection, excludedTags);
             JsonArrayBuilder builder = Json.createArrayBuilder();
-            for ( Recipe recipe : recipes )
+            for ( String tag : tags )
             {
-                builder = builder.add( recipe.toJSON());
+                builder = builder.add( tag );
             }
             Json.createWriter(out).write( builder.build() );
         }
@@ -46,5 +46,6 @@ public class RecipeSearch extends JSONServiceCommand
         {
             throw new ServletException( e );
         }
-    }   
+    }
+    
 }

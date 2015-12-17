@@ -5,6 +5,7 @@ body {
 div#recipes {
     padding-left:1em;
 }
+
 div.recipe {
     width:80%;
     padding:0.9em;
@@ -23,3 +24,14 @@ div.recipe span {
     float:right;
 }
 
+div#recipe {
+    position:absolute;
+    display:none;
+    border:1px solid red;
+    overflow: auto;
+    background-color: #FFFFFF;
+}
+
+div#recipe span.right {
+    float:right;
+}

@@ -5,7 +5,6 @@
  */
 package es.ait.recetario.desktop.commands.services;
 
-import es.ait.recetario.desktop.Utils;
 import es.ait.recetario.desktop.commands.BBDD.BBDDManager;
 import es.ait.recetario.desktop.commands.JSONServiceCommand;
 import es.ait.recetario.desktop.model.Recipe;
@@ -13,9 +12,8 @@ import es.ait.recetario.desktop.model.RecipeDAO;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.sql.Connection;
-import java.util.List;
+import java.util.Properties;
 import javax.json.Json;
-import javax.json.JsonArrayBuilder;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -24,27 +22,23 @@ import javax.servlet.http.HttpServletResponse;
  *
  * @author aitkiar
  */
-public class RecipeSearch extends JSONServiceCommand
+public class ShowRecipe extends JSONServiceCommand
 {
 
     @Override
     public void processRequest(HttpServletRequest request, HttpServletResponse response, PrintWriter out) throws IOException, ServletException
     {
-        List<String> tags = Utils.string2tags( request.getParameter("tags"));
+        Properties properties = new Properties();
         try
-            ( Connection connection = BBDDManager.getInstance("").getConnection())
+            (Connection connection = BBDDManager.getInstance(null).getConnection())
         {
-            List<Recipe> recipes = new RecipeDAO().search( connection, tags );
-            JsonArrayBuilder builder = Json.createArrayBuilder();
-            for ( Recipe recipe : recipes )
-            {
-                builder = builder.add( recipe.toJSON());
-            }
-            Json.createWriter(out).write( builder.build() );
+            Recipe recipe = new RecipeDAO().search(connection, Integer.parseInt( request.getParameter("id") ));
+            Json.createWriter(out).write( recipe.toJSON() );
         }
         catch ( Exception e )
         {
             throw new ServletException( e );
         }
-    }   
+    }
+    
 }

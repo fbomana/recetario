@@ -7,7 +7,10 @@ package es.ait.recetario.desktop.model;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Dao object that encapsulate the BBDD operations related to the tables TAGS and RECIPE_TAGS.
@@ -57,5 +60,45 @@ public class TagDAO
                 ps.executeUpdate();
             }
         }
+    }
+    
+    /**
+     * Searchs for all the tags that aren't in the excluded tags list.
+     * @param connection
+     * @param excludedTags
+     * @return A list of the tags alphabetivally ordered
+     * @throws SQLException 
+     */
+    public List<String> searchTags( Connection connection, List<String> excludedTags ) throws SQLException
+    {
+        String sql = "select tag from tags";
+        List<String> result = new ArrayList<>();
+        if ( !excludedTags.isEmpty())
+        {
+            sql+= " where tag not in (";
+            String separator = " ";
+            for ( String tag : excludedTags )
+            {
+                sql+= separator + "?";
+                separator = ", ";
+            }
+        }
+        sql += " order by tag";
+        try
+            (PreparedStatement ps = connection.prepareStatement( sql ))
+        {
+            int i = 1;
+            for ( String tag : excludedTags )
+            {
+                ps.setString( i++, tag );
+            }
+            ResultSet rs = ps.executeQuery();
+            while ( rs.next())
+            {
+                result.add( rs.getString("tag"));
+            }
+            rs.close();
+        }
+        return result;
     }
 }

@@ -121,4 +121,21 @@ public class Utils
         }
         return result;
     }
+    
+    /**
+     * Turns a list of strings in a coma separated string.
+     * @param tags
+     * @return 
+     */
+    public static String tags2string( List<String> tags )
+    {
+        String result = ""; 
+        String separator = "";
+        for ( String tag : tags )
+        {
+            result += separator + tag;
+            separator = ", ";
+        }
+        return result;
+    }
 }

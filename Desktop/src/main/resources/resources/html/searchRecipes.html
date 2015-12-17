@@ -1,4 +1,6 @@
 <link rel="stylesheet" href="/css/searchRecipe.css">
+<script src="/js/marked.min.js"></script>
+<script src="/js/recetario.js"></script>
 <section>
 <form method="post" action="/recipes/SearchRecipes">
     <label for="tags">Tags:
@@ -15,52 +17,70 @@
     </div>
 </section>
 
+<div id="recipe"></div>
 <script>
-    window.onload = searchRecipes();
+    window.onload = init();
+    
+    function init()
+    {
+        loadTags();
+        searchRecipes();
+    }
+    
+    function loadTags()
+    {
+        disableForm();
+        
+        var paramArray = new Array();
+        paramArray[0] = "tags";
+        paramArray[1] = document.getElementById( "tags" ).value;            
+        
+        post( '/services/TagSearch', paramArray, function ( ok, xhr ) {
+            if ( ok ) 
+            {
+                var tags = JSON.parse( xhr.responseText );
+                var select = ClearOptionsFast( "availableTags");
+                select.options[0] = new Option("", "", true, true );
+                for ( var i = 0; i < tags.length; i ++ )
+                {
+                    select.options[i+1] = new Option( tags[i], tags[i], false, false );
+                }
+            } 
+            else 
+            {
+                alert('Error: ' + xhr.status);
+            }
+            enableForm();
+        });        
+    }
     
     function searchRecipes( id )
     {
         disableForm();
         
-        var xhr = new XMLHttpRequest();
-        var params = "";
-        
+        var paramArray = new Array();
         if ( id )
         {
-            params += "id=" + encodeURIComponent( id );
+            paramArray[0] = "id";
+            paramArray[1] = "" + id;
         }
         else
         {
-            var tags = document.getElementById( "tags" ).value;
-            if ( tags )
-            {
-                params += "tags=" + encodeURIComponent( tags );
-            }
+            paramArray[0] = "tags";
+            paramArray[1] = document.getElementById( "tags" ).value;            
         }
-        xhr.open('post', '/services/RecipeSearch');
-        xhr.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
-        xhr.setRequestHeader("Content-length", params.length);
-        xhr.setRequestHeader("Connection", "close");
-
-        // Track the state changes of the request.
-        xhr.onreadystatechange = function () 
-        {
-            var DONE = 4;
-            var OK = 200;
-            if (xhr.readyState === DONE) 
+        
+        post( '/services/RecipeSearch', paramArray, function ( ok, xhr ) {
+            if ( ok ) 
             {
-                if (xhr.status === OK) 
-                {
-                    printRecipeList( JSON.parse( xhr.responseText ));
-                } 
-                else 
-                {
-                    alert('Error: ' + xhr.status);
-                }
-                enableForm();
+                printRecipeList( JSON.parse( xhr.responseText ));
+            } 
+            else 
+            {
+                alert('Error: ' + xhr.status);
             }
-        };
-        xhr.send( params );
+            enableForm();
+        });
     }
     
     function disableForm()
@@ -85,12 +105,12 @@
         var i = 0;
         while ( i < recipes.length )
         {
-            div.appendChild ( printRecipe( recipes[i]));
+            div.appendChild ( printRecipeListItem( recipes[i]));
             i++;
         }
     }
     
-    function printRecipe( recipe )
+    function printRecipeListItem( recipe )
     {
         var div = document.createElement("div");
         div.className="recipe";
@@ -117,6 +137,75 @@
         span.appendChild( document.createTextNode("Update: " + recipe.update ));
         div.appendChild( span );
         return div;
+    }
+    
+    function showRecipe( id )
+    {       
+        var paramArray = new Array();
+        paramArray[0] = "id";
+        paramArray[1] = "" + id;
+        post( '/services/ShowRecipe', paramArray, function ( ok, xhr ) {
+            if ( ok ) 
+            {
+                printRecipe( JSON.parse( xhr.responseText ));
+            } 
+            else 
+            {
+                alert('Error: ' + xhr.status);
+            }
+        });
+    }
+    
+    function printRecipe( recipe )
+    {
+        var div = ClearOptionsFast("recipe");
+        div.style.display="none";
+        
+        // Dimensions
+        var divWith = Math.max( 500, recetario_x / 2 );
+        var divHeight = Math.max( 400, recetario_y / 2 );
+        div.style.top = divHeight / 2 + "px";
+        div.style.left =  divWith / 2 + "px";
+        div.style.width = divWith + "px";
+        div.style.height = divHeight + "px";
+        
+        var span = document.createElement("span");
+        span.style="right";
+        span.appendChild( document.createTextNode("X"));
+        div.appendChild( span );
+        
+        var h1 = document.createElement("h1");
+        h1.appendChild( document.createTextNode( recipe.title ));
+        div.appendChild( h1 );
+        
+        var recipeDiv = document.createElement("div");
+        recipeDiv.className = "recipeDiv";
+        recipeDiv.innerHTML = marked( recipe.recipe );
+        div.appendChild( recipeDiv );
+        
+        var tagsSpan = document.createElement("span");
+        tagsSpan.className="tags";
+        
+        var tagsText = "Tags: "; 
+        for ( var i = 0; i < recipe.tags.length; i ++ )
+        {
+            if ( i > 0 )
+            {
+                tagsText += ", ";
+            }
+            tagsText += recipe.tags[i];
+        }
+        tagsSpan.appendChild(document.createTextNode( tagsText ));
+        div.appendChild( tagsSpan );
+        
+        
+        div.style.display="block";
+    }
+    
+    function closeRecipe()
+    {
+        var div = ClearOptionsFast("recipe");
+        div.style.display = "none";
     }
     
 </script>
