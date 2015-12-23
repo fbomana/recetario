@@ -37,7 +37,7 @@ public class Recetario
         {
             return true;
         }
-        if ( !System.getenv("XDG_CURRENT_DESKTOP").toLowerCase().contains("GNOME"))
+        if ( !System.getenv("XDG_CURRENT_DESKTOP").toUpperCase().contains("GNOME"))
         {
             return !"kde".equals( System.getenv("XDG_CURRENT_DESKTOP").toLowerCase()) || !"5".equals( System.getenv("KDE_SESSION_VERSION"));
         }

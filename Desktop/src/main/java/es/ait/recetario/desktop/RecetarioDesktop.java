@@ -7,6 +7,7 @@ package es.ait.recetario.desktop;
 
 import java.awt.MenuItem;
 import java.awt.event.ActionListener;
+import javax.swing.JButton;
 
 /**
  *
@@ -56,6 +57,7 @@ public class RecetarioDesktop extends javax.swing.JFrame implements ActionListen
         getContentPane().add(ShowRecipesButton, gridBagConstraints);
 
         NewRecipeButton.setText("New Recipe");
+	NewRecipeButton.addActionListener( this );
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
         gridBagConstraints.gridy = 1;
@@ -64,6 +66,7 @@ public class RecetarioDesktop extends javax.swing.JFrame implements ActionListen
         getContentPane().add(NewRecipeButton, gridBagConstraints);
 
         ExitButton.setText("Exit");
+	ExitButton.addActionListener( this );
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
         gridBagConstraints.gridy = 2;
@@ -79,7 +82,7 @@ public class RecetarioDesktop extends javax.swing.JFrame implements ActionListen
     {//GEN-HEADEREND:event_ShowRecipesButtonActionPerformed
         try
         {
-            switch ( ((MenuItem)event.getSource()).getName())
+            switch ( ((JButton)event.getSource()).getName())
             {
                 case "exit":
                     recetario.exit();
