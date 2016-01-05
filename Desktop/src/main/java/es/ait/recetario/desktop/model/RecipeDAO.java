@@ -62,6 +62,23 @@ public class RecipeDAO
     }
     
     /**
+     * Searchs for recipes using the tags passed as parameter.
+     * @param connection the connections for the search
+     * @param tags the tags list.
+     * @param inclusive indicates if whe search for recipe with one of the tags, or the recipes with all the tags.
+     * @return
+     * @throws SQLException 
+     */
+    public List<Recipe> search( Connection connection, List<String> tags, boolean inclusive ) throws SQLException
+    {
+        if ( inclusive )
+        {
+            return inclusiveSearch( connection, tags );
+        }
+        return exclusiveSearch( connection, tags );
+    }
+    
+    /**
      * Searchs for the recipes that have any of the tags passed as parameter. If no 
      * tags passed shows all recipes.
      * @param connection
@@ -69,7 +86,7 @@ public class RecipeDAO
      * @return return a list with all the recipes but whihtout the recipe.
      * @throws SQLException 
      */
-    public List<Recipe> search( Connection connection, List<String> tags ) throws SQLException
+    private List<Recipe> inclusiveSearch( Connection connection, List<String> tags ) throws SQLException
     {
         String sql = "select a.recipe_id, a.recipe_title, a.recipe_date, "
             + "a.recipe_update, b.tag from recipe a, recipe_tags b where "
@@ -111,7 +128,64 @@ public class RecipeDAO
         }
         return result;
     }
-    
+
+    /**
+     * Searchs for the recipes that have all of the tags passed as parameter. If no 
+     * tags passed shows all recipes.
+     * @param connection
+     * @param tags
+     * @return return a list with all the recipes but whihtout the recipe.
+     * @throws SQLException 
+     */
+    private List<Recipe> exclusiveSearch( Connection connection, List<String> tags ) throws SQLException
+    {
+        String sql = "select a.recipe_id, a.recipe_title, a.recipe_date, "
+            + "a.recipe_update, b.tag from recipe a, recipe_tags b where "
+            + "a.recipe_id = b.recipe_id ";
+        List<Recipe> result = new ArrayList<>();
+        if ( tags != null && !tags.isEmpty())
+        {
+            
+            sql+= " and a.recipe_id in ( select f.recipe_id from ( select c.recipe_id, count ( * ) as cuenta "
+                + " from recipe_tags c where tag in (";
+            for( int i = 0; i < tags.size(); i ++ )
+            {
+                if ( i > 0 )
+                {
+                    sql+= ", ";
+                }
+                sql += "?";
+            }
+            sql += ") group by c.recipe_id ) f where cuenta >= ? )";
+        }
+        sql += " order by recipe_update desc";
+        try
+            (PreparedStatement ps = connection.prepareStatement(sql))
+        {
+            for ( int i = 0; i < tags.size(); i ++ )
+            {
+                ps.setString(i+1, tags.get( i ));
+            }
+            if ( tags.size() > 0 )
+            {
+                ps.setInt( tags.size() + 1, tags.size() );
+            }
+            ResultSet rs = ps.executeQuery();
+            Recipe recipe = null;
+            while ( rs.next())
+            {
+                if ( recipe == null || rs.getInt( "recipe_id" ) != recipe.getRecipeId() )
+                {
+                    recipe = readRecipe( rs, false );
+                    result.add( recipe );
+                }
+                recipe.addTag( rs.getString( "tag"));
+            }
+            rs.close();
+        }
+        return result;
+    }
+
     /**
      * Searchs for a specific recipe and get all the information about it.
      * @param connection

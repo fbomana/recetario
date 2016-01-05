@@ -1,6 +1,7 @@
 <link rel="stylesheet" href="/css/newRecipe.css"/>
 <script src="/js/vue.min.js"></script>
 <script src="/js/marked.min.js"></script>
+<div id="content">
 <section id="formSection" style="left">
   <div class="contentBox">
     <h1>New Recipe</h1>
@@ -9,13 +10,14 @@
         <label for="title">Title:<br>
             <input type="text" value="" required id="title" name="title"/>
         </label><br>
-        <label for="content" id="editor">Content:<br>
-            <textarea required id="content" name="content" v-model="input" debounce="300"></textarea>
+        <label for="contentEditor" id="editor">Content:<br>
+            <textarea required id="contentEditor" name="contentEditor" v-model="input" debounce="300"></textarea>
             <div v-html="input | marked" id="preview"></div>
         </label><br>
         <label for="tags">Tags:<br>
-            <input type="text" value="" required id="tags" pattern="[a-zA-Z0-9\-_]+(?:\s*,\s*[a-zA-Z0-9\-_]+)*" name="tags"/><input type="button" id="tagSearch"/>
-        </label><br>
+            <input type="text" value="" required id="tags" pattern="[a-zA-Z0-9\-_]+(?:\s*,\s*[a-zA-Z0-9\-_]+)*" name="tags" onkeyup="loadTags()"/>
+        </label><select id="availableTags" onChange="addTag();"></select><br>
+        <br>
         <input type="submit" value="enviar"/>
     </form>
   </div>
@@ -26,12 +28,18 @@
     <h1>Preview</h1>
     </div>
 </section>
+</div>
 <script>
 
+function init()
+{
+    resizeElements();
+    loadTags();
+}
 
 function resizeElements( event )
 {
-  document.getElementById("content").style.height = window.innerHeight / 2  + "px";
+  document.getElementById("contentEditor").style.height = window.innerHeight / 2  + "px";
   document.getElementById("preview").style.top = document.getElementById("previewSection").getBoundingClientRect().top + "px";
   document.getElementById("preview").style.left = document.getElementById("previewSection").getBoundingClientRect().left + "px";
   var ancho = window.innerWidth - document.getElementById("previewSection").getBoundingClientRect().left;
@@ -40,12 +48,47 @@ function resizeElements( event )
   document.getElementById("preview").style.height = window.innerHeight * 3 / 4 + "px";
 }
 
+function addTag()
+{
+    var text = document.getElementById( "tags" );
+    if ( text.value )
+    {
+        text.value += ", ";
+    }
+    text.value += document.getElementById( "availableTags" ).value;
+    loadTags();
+}
+
+    function loadTags()
+    {       
+        var paramArray = new Array();
+        paramArray[0] = "tags";
+        paramArray[1] = document.getElementById( "tags" ).value;            
+        
+        post( '/services/TagSearch', paramArray, function ( ok, xhr ) {
+            if ( ok ) 
+            {
+                var tags = JSON.parse( xhr.responseText );
+                var select = ClearOptionsFast( "availableTags");
+                select.options[0] = new Option("", "", true, true );
+                for ( var i = 0; i < tags.length; i ++ )
+                {
+                    select.options[i+1] = new Option( tags[i], tags[i], false, false );
+                }
+            } 
+            else 
+            {
+                alert('Error: ' + xhr.status);
+            }
+        });        
+    }
+    
 window.onresize = resizeElements;
-window.onload = resizeElements;
+window.onload = init;
 new Vue({
   el: '#editor',
   data: {
-    input: '# hello'
+    input: ''
   },
   filters: {
     marked: marked

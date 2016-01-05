@@ -5,6 +5,7 @@
  */
 package es.ait.recetario.desktop;
 
+import es.ait.recetario.desktop.templates.TemplateFactory;
 import java.awt.Desktop;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -45,23 +46,14 @@ public class Utils
      * @param e
      * @return 
      */
-    public static String exceptionToHTMLString( Exception e )
+    public static String exceptionToHTMLString( Exception e ) throws IOException
     {
         ByteArrayOutputStream bos = new ByteArrayOutputStream();
         PrintStream ps = new PrintStream( bos );
         e.printStackTrace(ps);
         ps.close();
         String error = bos.toString();
-        error = "<!DOCTYPE html>"
-                + "<html>"
-                + "<head><link rel='stylesheet' href='/css/recetario.css'></head>"
-                + "<body class='error'>"
-                + "<pre>"
-                + error
-                + "</pre>"
-                + "</body>"
-                + "</html>";
-        return error;
+        return TemplateFactory.getRawTemplate("errortemplate.html", null).replace("----------------",  error );
     }
     
     /**
@@ -69,15 +61,9 @@ public class Utils
      * @param body
      * @return 
      */
-    public static String contentsToHtml( String contents )
+    public static String contentsToHtml( String contents ) throws IOException
     {
-        return "<!DOCTYPE html>"
-                + "<html>"
-                + "<head><link rel='stylesheet' href='/css/recetario.css'></head>"
-                + "<body>"
-                + ( contents != null ? contents : "") 
-                + "</body>"
-                + "</html>";
+        return TemplateFactory.getRawTemplate("basictemplate.html", null).replace("----------------",  contents != null ? contents : "");
     }
     
     /**

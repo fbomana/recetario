@@ -19,15 +19,14 @@ import java.util.regex.Pattern;
 public class TemplateFactory
 {
     /**
-     * Transform the template in /resources/html/<name> into a String containing
-     * an html page. It also substitutes all properties in the template.
+     * Returns the template in /resources/html and substitutes all properties in the template.
      * 
      * @param name name of the template. Can contain a URL relative to /resources/html
      * @param properties the values to substitute in the template.
      * @return a String with the html
      * @throws IOException 
      */
-    public static String getTemplate( String name, Properties properties ) throws IOException
+    public static String getRawTemplate( String name, Properties properties ) throws IOException
     {
         BufferedReader br = null;
         InputStreamReader isr = null;
@@ -49,7 +48,7 @@ public class TemplateFactory
                     template = template.replaceAll( Pattern.quote("{" + key.toString() + "}"), properties.get( key ).toString());
                 }
             }
-            return Utils.contentsToHtml( template );
+            return template;
         }
         finally
         {
@@ -62,5 +61,19 @@ public class TemplateFactory
                 isr.close();
             }
         }
+    }
+    
+    /**
+     * Transform the template in /resources/html/<name> into a String containing
+     * an html page. It also substitutes all properties in the template.
+     * 
+     * @param name name of the template. Can contain a URL relative to /resources/html
+     * @param properties the values to substitute in the template.
+     * @return a String with the html
+     * @throws IOException 
+     */
+    public static String getTemplate( String name, Properties properties ) throws IOException
+    {
+        return Utils.contentsToHtml( getRawTemplate( name, properties ));
     }
 }

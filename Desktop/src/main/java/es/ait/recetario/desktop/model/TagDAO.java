@@ -82,6 +82,8 @@ public class TagDAO
                 sql+= separator + "?";
                 separator = ", ";
             }
+            sql += " )";
+                    
         }
         sql += " order by tag";
         try

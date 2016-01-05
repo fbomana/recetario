@@ -1,13 +1,15 @@
 <link rel="stylesheet" href="/css/searchRecipe.css">
 <script src="/js/marked.min.js"></script>
-<script src="/js/recetario.js"></script>
+<div id="content">
 <section>
-<form method="post" action="/recipes/SearchRecipes">
+<form method="post" action="/recipes/SearchRecipes" onsubmit="searchRecipes();return false;">
     <label for="tags">Tags:
-        <input type="text" value="" id="tags" name="tags" pattern="(?:[a-zA-Z0-9\-_]+(?:\s*,\s*[a-zA-Z0-9\-_]+))*"/>
+        <input type="text" value="" id="tags" name="tags" pattern="(?:[a-zA-Z0-9\-_]+(?:\s*,\s*[a-zA-Z0-9\-_]+)*)" onChange="checkEmpty( this );"/>
     </label>
-    <select id="availableTags">
-    </select>
+    <select id="availableTags" onChange="addTag();"></select>
+    <input type="button" value="search" onclick="searchRecipes();"><br>
+    <label for="searchType">All tags<input id="searchType" name="searchType" type="checkbox" checked value="1"></label>
+    
 </form>
 </section>
 <section>
@@ -16,15 +18,34 @@
         
     </div>
 </section>
-
-<div id="recipe"></div>
+</div>
+<div id="recipeDetail"></div>
 <script>
-    window.onload = init();
+    window.onload = init;
     
     function init()
     {
         loadTags();
         searchRecipes();
+    }
+    
+    function checkEmpty( text )
+    {
+        if ( !text.value )
+        {
+            loadTags();
+        }
+    }
+    
+    function addTag()
+    {
+        var text = document.getElementById( "tags" );
+        if ( text.value )
+        {
+            text.value += ", ";
+        }
+        text.value += document.getElementById( "availableTags" ).value;
+        loadTags();
     }
     
     function loadTags()
@@ -67,7 +88,9 @@
         else
         {
             paramArray[0] = "tags";
-            paramArray[1] = document.getElementById( "tags" ).value;            
+            paramArray[1] = document.getElementById( "tags" ).value;
+            paramArray[2] = "searchType";
+            paramArray[3] = document.getElementById( "searchType" ).checked ? "true" : false;
         }
         
         post( '/services/RecipeSearch', paramArray, function ( ok, xhr ) {
@@ -158,20 +181,22 @@
     
     function printRecipe( recipe )
     {
-        var div = ClearOptionsFast("recipe");
+        var div = ClearOptionsFast("recipeDetail");
         div.style.display="none";
         
         // Dimensions
-        var divWith = Math.max( 500, recetario_x / 2 );
+        var divWidth = Math.max( 500, recetario_x / 2 );
         var divHeight = Math.max( 400, recetario_y / 2 );
-        div.style.top = divHeight / 2 + "px";
-        div.style.left =  divWith / 2 + "px";
-        div.style.width = divWith + "px";
+        div.style.top = ( recetario_y - divHeight ) / 2 + "px";
+        div.style.left =  ( recetario_x - divWidth )/ 2 + "px";
+        div.style.width = divWidth + "px";
         div.style.height = divHeight + "px";
         
         var span = document.createElement("span");
-        span.style="right";
+        span.className="right";
         span.appendChild( document.createTextNode("X"));
+        span.onclick = closeRecipe;
+        span.style.cursor = "pointer";
         div.appendChild( span );
         
         var h1 = document.createElement("h1");
@@ -179,6 +204,8 @@
         div.appendChild( h1 );
         
         var recipeDiv = document.createElement("div");
+        recipeDiv.style.width = "calc(" + divWidth + "px - 1em)";
+        recipeDiv.style.height = "calc(" + divHeight + "px - 4em - 50px)";
         recipeDiv.className = "recipeDiv";
         recipeDiv.innerHTML = marked( recipe.recipe );
         div.appendChild( recipeDiv );
@@ -204,7 +231,7 @@
     
     function closeRecipe()
     {
-        var div = ClearOptionsFast("recipe");
+        var div = ClearOptionsFast("recipeDetail");
         div.style.display = "none";
     }
     

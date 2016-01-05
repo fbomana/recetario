@@ -12,7 +12,28 @@ document.onresize = function( event )
     recetario_y = recetario_w.innerHeight|| recetario_e.clientHeight|| recetario_g.clientHeight;
 }
 
-
+/**
+ * Changes the class of the selected menu option
+ * @returns {undefined}
+ */
+function lightMenu()
+{
+    var path = window.location.pathname;
+    var id = "";
+    if ( path == "/recipes/SearchRecipes")
+    {
+        id = "search";
+    }
+    else if ( path == "/recipes/NewRecipe")
+    {
+        id = "new";
+    }
+    
+    if ( id )
+    {
+        document.getElementById( id ).className="menuSelected";
+    }
+}
 /**
  * Create an empty copy of a DOM element and replace the original by it. Returns the
  * new object.

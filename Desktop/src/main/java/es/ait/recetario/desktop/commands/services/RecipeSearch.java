@@ -34,7 +34,7 @@ public class RecipeSearch extends JSONServiceCommand
         try
             ( Connection connection = BBDDManager.getInstance("").getConnection())
         {
-            List<Recipe> recipes = new RecipeDAO().search( connection, tags );
+            List<Recipe> recipes = new RecipeDAO().search(connection, tags, !"true".equals( request.getParameter("searchType")) );
             JsonArrayBuilder builder = Json.createArrayBuilder();
             for ( Recipe recipe : recipes )
             {

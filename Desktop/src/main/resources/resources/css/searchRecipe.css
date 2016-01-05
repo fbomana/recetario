@@ -1,5 +1,8 @@
 body {
-    margin:1em;
+}
+
+#tags {
+    width:40%;
 }
 
 div#recipes {
@@ -24,14 +27,25 @@ div.recipe span {
     float:right;
 }
 
-div#recipe {
+div#recipeDetail {
     position:absolute;
     display:none;
-    border:1px solid red;
-    overflow: auto;
+    border:2px solid green;
+    border-radius:25px;
+    overflow: hidden;
     background-color: #FFFFFF;
+    padding:1em;
 }
 
-div#recipe span.right {
+div#recipeDetail span.right {
     float:right;
+}
+
+div#recipeDetail div.recipeDiv {
+    overflow:auto;
+}
+
+div#recipeDetail span.tags {
+    padding-top:0.5em;
+    color:darkgrey;
 }

@@ -11,7 +11,6 @@
 
 #previewSection {
     width: 50%;
-    height: 100%;
     float:right;
 }
 
@@ -19,8 +18,12 @@ div.contentBox {
     padding:1em;
 }
 
-input[type='text'] {
+input#title {
     width:100%;
+}
+
+input#tags {
+    width:75%
 }
 textarea {
     width:100%;

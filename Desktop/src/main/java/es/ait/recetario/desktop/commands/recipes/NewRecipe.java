@@ -44,7 +44,7 @@ public class NewRecipe extends Command
     {
         Recipe recipe = new Recipe();
         recipe.setRecipeTitle( request.getParameter("title"));
-        recipe.setRecipe( request.getParameter("content"));
+        recipe.setRecipe( request.getParameter("contentEditor"));
         recipe.setTags( Utils.string2tags( request.getParameter("tags")));
         
         Connection connection = null;
