@@ -93,17 +93,31 @@ public class Recetario
         try
         {
             recetario = new Recetario();
-            recetario.startBBDD();
-            if ( recetario.isIconAvailable() )
+            Preferences preferences = Preferences.getInstance();
+            if ( preferences.getRecetarioName() == null )
             {
-                RecetarioIcon icon = new RecetarioIcon(recetario);
-                icon.enableSystemTray();
+                java.awt.EventQueue.invokeLater(new Runnable()
+                {
+                    public void run()
+                    {
+                        new AskForName().setVisible(true);
+                    }
+                });
             }
             else
             {
-                RecetarioDesktop.showRecetario( recetario );
+                recetario.startBBDD();
+                if ( recetario.isIconAvailable() )
+                {
+                    RecetarioIcon icon = new RecetarioIcon(recetario);
+                    icon.enableSystemTray();
+                }
+                else
+                {
+                    RecetarioDesktop.showRecetario( recetario );
+                }
+                recetario.starServer();
             }
-            recetario.starServer();
         }
         catch ( Exception e )
         {

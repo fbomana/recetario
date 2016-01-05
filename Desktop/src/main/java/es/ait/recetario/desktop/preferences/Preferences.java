@@ -23,6 +23,7 @@ public class Preferences
     private boolean firstRun = false;
     private String derbyFolder;
     private File file;
+    private String recetarioName;
     
     /**
      * Default constructor. It's private to force use the singleton pattern.
@@ -60,6 +61,7 @@ public class Preferences
             in = new FileReader( file );
             prop.load( in );
             derbyFolder = prop.getProperty("derbyFolder", "data");
+            recetarioName = prop.getProperty("recetarioName", null );
         }
         catch ( Exception e )
         {
@@ -88,8 +90,12 @@ public class Preferences
             writer.write("# Recetario configuration file\n");
             writer.write("###\n");
             writer.write("\n");
+            writer.write("# Recetario Name\n");
+            writer.write("recetarioName=" + ( recetarioName != null ? recetarioName : "")+ "\n");
+            writer.write("\n");
             writer.write("# BBDD folder\n");
             writer.write("derbyFolder=" + ( derbyFolder != null ? derbyFolder : "")+ "\n");
+            
         }
         catch ( IOException e )
         {
@@ -140,6 +146,16 @@ public class Preferences
     public void setDerbyFolder(String derbyFolder)
     {
         this.derbyFolder = derbyFolder;
+    }
+    
+    public String getRecetarioName()
+    {
+        return recetarioName;
+    }
+    
+    public void setRecetarioName( String recetarioName )
+    {
+        this.recetarioName = recetarioName;
     }
     
 }

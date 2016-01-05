@@ -25,7 +25,7 @@ public class BBDDManager
     private EmbeddedConnectionPoolDataSource datasource;
     private String bbdd;
     private boolean startedtUp = false;
-    private static final String[] versions = {"0.1.0"};
+    private static final String[] versions = {"0.1.0", "0.2.0"};
     
     private BBDDManager( String bbdd )
     {
