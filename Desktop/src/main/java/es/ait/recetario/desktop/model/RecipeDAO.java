@@ -6,8 +6,8 @@
 package es.ait.recetario.desktop.model;
 
 import java.io.BufferedReader;
-import java.io.ByteArrayInputStream;
 import java.io.IOException;
+import java.io.StringReader;
 import java.io.UnsupportedEncodingException;
 import java.sql.Clob;
 import java.sql.Connection;
@@ -41,7 +41,7 @@ public class RecipeDAO
             recipe.setRecipeDate( new Date());
             recipe.setRecipeUpdate( recipe.getRecipeDate());
             ps.setString( 1, recipe.getRecipeTitle() );
-            ps.setAsciiStream( 2, new ByteArrayInputStream( recipe.getRecipe().getBytes("utf-8")));
+            ps.setCharacterStream(2, new StringReader( recipe.getRecipe()));
             ps.setTimestamp(3, new Timestamp( recipe.getRecipeDate().getTime()));
             ps.setTimestamp(4, new Timestamp( recipe.getRecipeUpdate().getTime()));
             ps.executeUpdate();
@@ -52,10 +52,6 @@ public class RecipeDAO
             }
             recipe.setRecipeId( rs.getInt(1));
             rs.close();
-        }
-        catch ( UnsupportedEncodingException e )
-        {
-            throw new SQLException( e );
         }
         
         new TagDAO().updateTags( connection, recipe );

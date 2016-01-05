@@ -4,7 +4,7 @@
 <section>
 <form method="post" action="/recipes/SearchRecipes" onsubmit="searchRecipes();return false;">
     <label for="tags">Tags:
-        <input type="text" value="" id="tags" name="tags" pattern="(?:[a-zA-Z0-9\-_]+(?:\s*,\s*[a-zA-Z0-9\-_]+)*)" onChange="checkEmpty( this );"/>
+        <input type="text" value="" id="tags" name="tags" pattern="(?:[a-zA-Z0-9\-_]+(?:\s*,\s*[a-zA-Z0-9\-_]+)*)" onkeyup="checkEmpty( this );"/>
     </label>
     <select id="availableTags" onChange="addTag();"></select>
     <input type="button" value="search" onclick="searchRecipes();"><br>
@@ -31,10 +31,7 @@
     
     function checkEmpty( text )
     {
-        if ( !text.value )
-        {
-            loadTags();
-        }
+        loadTags();
     }
     
     function addTag()
