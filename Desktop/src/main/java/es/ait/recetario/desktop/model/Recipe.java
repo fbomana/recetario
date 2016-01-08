@@ -5,8 +5,11 @@
  */
 package es.ait.recetario.desktop.model;
 
+import es.ait.recetario.desktop.preferences.Preferences;
+import java.io.UnsupportedEncodingException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Base64;
 import java.util.List;
 import java.util.Date;
 import javax.json.Json;
@@ -24,6 +27,8 @@ public class Recipe
     private String recipe;
     private Date recipeDate;
     private Date recipeUpdate;
+    private String recipeOrigin;
+    private String recipeShareId;
     private List<String> tags;
 
     /**
@@ -159,8 +164,58 @@ public class Recipe
             .add("recipe", recipe != null ? recipe : "")
             .add("date", sdf.format( recipeDate ))
             .add("update", sdf.format( recipeUpdate ))
+            .add("origin", recipeOrigin )
+            .add("shareId", getRecipeShareId() )
             .add("tags", builder.build())
             .build();
                 
+    }
+
+    /**
+     * @return the recipeOrigin
+     */
+    public String getRecipeOrigin()
+    {
+        if ( recipeOrigin == null )
+        {
+            recipeOrigin = Preferences.getInstance().getRecetarioName();
+        }
+        return recipeOrigin;
+    }
+
+    /**
+     * @param recipeOrigin the recipeOrigin to set
+     */
+    public void setRecipeOrigin(String recipeOrigin)
+    {
+        this.recipeOrigin = recipeOrigin;
+    }
+
+    /**
+     * @return the recipeShareId
+     */
+    public String getRecipeShareId()
+    {
+        if ( recipeShareId == null )
+        {
+            try
+            {
+                String shareId = recipeOrigin + recipeTitle + new SimpleDateFormat("yyyyMMddHHmmss").format( recipeDate );
+                recipeShareId = Base64.getEncoder().encodeToString( shareId.getBytes("UTF-8"));
+            }
+            catch ( UnsupportedEncodingException e )
+            {
+                // do nothing if utf-8 is not supported.
+            }
+        }
+        return recipeShareId;
+    }
+
+    /**
+     * @param recipeShareId the recipeShareId to set
+     */
+    public void setRecipeShareId(String recipeShareId)
+    {
+        this.recipeShareId = recipeShareId;
     }
 }

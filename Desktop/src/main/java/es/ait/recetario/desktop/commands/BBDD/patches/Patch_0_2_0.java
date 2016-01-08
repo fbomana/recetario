@@ -12,6 +12,7 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.text.SimpleDateFormat;
 import java.util.Base64;
 
 /**
@@ -31,7 +32,7 @@ public class Patch_0_2_0 implements BBDDPatch
         }
 
         try ( PreparedStatement ps = connection.prepareStatement("alter table recipe add column \n" +
-            "  recipe_share_id varchar( 512 )"))
+            "  recipe_share_id varchar( 1024 )"))
         {
             ps.executeUpdate();
         }
@@ -42,15 +43,16 @@ public class Patch_0_2_0 implements BBDDPatch
             ps.executeUpdate();
         }
         
-        try (PreparedStatement ps = connection.prepareStatement("select recipe_id, recipe_title from recipe");ResultSet rs = ps.executeQuery();)
+        try (PreparedStatement ps = connection.prepareStatement("select recipe_id, recipe_title, recipe_date from recipe");ResultSet rs = ps.executeQuery();)
         {
             try ( PreparedStatement ps2 = connection.prepareStatement("update recipe set recipe_origin=?, recipe_share_id=? where recipe_id = ?"))
             {
                 int contador = 0;
+                SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMddHHmmss");
                 while ( rs.next() )
                 {
                     ps2.setString( 1, Preferences.getInstance().getRecetarioName());
-                    String shareId = Preferences.getInstance().getRecetarioName() + rs.getString("recipe_title");
+                    String shareId = Preferences.getInstance().getRecetarioName() + rs.getString("recipe_title") + sdf.format( rs.getTimestamp("recipe_date"));
                     String encodedString = Base64.getEncoder().encodeToString( shareId.getBytes("UTF-8"));
                     ps2.setString( 2, encodedString );
                     ps2.setInt( 3, rs.getInt("recipe_id"));

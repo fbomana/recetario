@@ -8,7 +8,6 @@ package es.ait.recetario.desktop.model;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.StringReader;
-import java.io.UnsupportedEncodingException;
 import java.sql.Clob;
 import java.sql.Connection;
 import java.util.Date;
@@ -36,7 +35,7 @@ public class RecipeDAO
     public void create ( Connection connection, Recipe recipe ) throws SQLException
     {
         try
-            ( PreparedStatement ps = connection.prepareStatement("insert into recipe ( recipe_title, recipe, recipe_date, recipe_update ) values ( ?, ?, ?, ? )", new String[]{"RECIPE_ID"}))
+            ( PreparedStatement ps = connection.prepareStatement("insert into recipe ( recipe_title, recipe, recipe_date, recipe_update, recipe_origin, recipe_share_id ) values ( ?, ?, ?, ?, ?, ? )", new String[]{"RECIPE_ID"}))
         {
             recipe.setRecipeDate( new Date());
             recipe.setRecipeUpdate( recipe.getRecipeDate());
@@ -44,6 +43,8 @@ public class RecipeDAO
             ps.setCharacterStream(2, new StringReader( recipe.getRecipe()));
             ps.setTimestamp(3, new Timestamp( recipe.getRecipeDate().getTime()));
             ps.setTimestamp(4, new Timestamp( recipe.getRecipeUpdate().getTime()));
+            ps.setString( 5, recipe.getRecipeOrigin());
+            ps.setString( 6, recipe.getRecipeShareId());
             ps.executeUpdate();
             ResultSet rs = ps.getGeneratedKeys();
             if ( rs == null || !rs.next())
@@ -55,6 +56,43 @@ public class RecipeDAO
         }
         
         new TagDAO().updateTags( connection, recipe );
+    }
+    
+    /**
+     * Updates all the information of a recipe in BBDD.
+     * @param connection
+     * @param recipe
+     * @throws SQLException 
+     */
+    public void update ( Connection connection, Recipe recipe ) throws SQLException
+    {
+        try
+            ( PreparedStatement ps = connection.prepareStatement("update recipe set recipe_title=?, recipe=?,"
+                + " recipe_date=?, recipe_update=?, recipe_origin=?, recipe_share_id=? where recipe_id = ?"))
+        {
+            recipe.setRecipeUpdate( new Date());
+            ps.setString( 1, recipe.getRecipeTitle() );
+            ps.setCharacterStream(2, new StringReader( recipe.getRecipe()));
+            ps.setTimestamp(3, new Timestamp( recipe.getRecipeDate().getTime()));
+            ps.setTimestamp(4, new Timestamp( recipe.getRecipeUpdate().getTime()));
+            ps.setString( 5, recipe.getRecipeOrigin());
+            ps.setString( 6, recipe.getRecipeShareId());
+            ps.setInt( 7, recipe.getRecipeId());
+            ps.executeUpdate();
+        }
+        
+        new TagDAO().updateTags( connection, recipe );
+    }
+    
+    public void delete ( Connection connection, int id  ) throws SQLException
+    {
+        new TagDAO().deleteRecipeTags( connection, id );
+        try
+            ( PreparedStatement ps = connection.prepareStatement("delete from recipe where recipe_id = ?"))
+        {
+            ps.setInt( 1, id );
+            ps.executeUpdate();
+        }
     }
     
     /**
@@ -85,7 +123,7 @@ public class RecipeDAO
     private List<Recipe> inclusiveSearch( Connection connection, List<String> tags ) throws SQLException
     {
         String sql = "select a.recipe_id, a.recipe_title, a.recipe_date, "
-            + "a.recipe_update, b.tag from recipe a, recipe_tags b where "
+            + "a.recipe_update, a.recipe_origin, a.recipe_share_id, b.tag from recipe a, recipe_tags b where "
             + "a.recipe_id = b.recipe_id ";
         List<Recipe> result = new ArrayList<>();
         if ( tags != null && !tags.isEmpty())
@@ -136,7 +174,7 @@ public class RecipeDAO
     private List<Recipe> exclusiveSearch( Connection connection, List<String> tags ) throws SQLException
     {
         String sql = "select a.recipe_id, a.recipe_title, a.recipe_date, "
-            + "a.recipe_update, b.tag from recipe a, recipe_tags b where "
+            + "a.recipe_update, a.recipe_origin, a.recipe_share_id, b.tag from recipe a, recipe_tags b where "
             + "a.recipe_id = b.recipe_id ";
         List<Recipe> result = new ArrayList<>();
         if ( tags != null && !tags.isEmpty())
@@ -224,6 +262,8 @@ public class RecipeDAO
         recipe.setRecipeTitle( rs.getString("recipe_title"));
         recipe.setRecipeDate( rs.getTimestamp("recipe_date"));
         recipe.setRecipeUpdate( rs.getTimestamp("recipe_update"));
+        recipe.setRecipeOrigin( rs.getString("recipe_origin"));
+        recipe.setRecipeShareId( rs.getString("recipe_share_id"));
         if ( readClob )
         {
             Clob clob = rs.getClob("recipe");

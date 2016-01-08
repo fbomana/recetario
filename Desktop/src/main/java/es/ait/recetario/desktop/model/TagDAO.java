@@ -28,12 +28,8 @@ public class TagDAO
      */
     public void updateTags( Connection connection, Recipe recipe ) throws SQLException
     {
-        try
-            (PreparedStatement ps = connection.prepareStatement("delete from recipe_tags where recipe_id=?"))
-        {
-            ps.setInt( 1, recipe.getRecipeId());
-            ps.executeUpdate();
-        }
+        deleteRecipeTags( connection, recipe.getRecipeId());
+        
         for ( String tag : recipe.getTags() )
         {
             try
@@ -60,6 +56,31 @@ public class TagDAO
                 ps.executeUpdate();
             }
         }
+    }
+    
+    /**
+     * Delete al tags related to a recipe in the recpe_tags table and then clean
+     * all orphan tags.
+     * 
+     * @param connection
+     * @param recipeId
+     * @throws SQLException 
+     */
+    public void deleteRecipeTags( Connection connection, int recipeId ) throws SQLException
+    {
+        try
+            (PreparedStatement ps = connection.prepareStatement("delete from recipe_tags where recipe_id=?"))
+        {
+            ps.setInt( 1, recipeId );
+            ps.executeUpdate();
+        }
+        
+        try
+            (PreparedStatement ps = connection.prepareStatement("delete from tags where tag not in ( select tag from recipe_tags )"))
+        {
+            ps.executeUpdate();
+        }        
+        
     }
     
     /**

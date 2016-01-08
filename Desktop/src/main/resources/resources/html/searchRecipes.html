@@ -4,7 +4,7 @@
 <section>
 <form method="post" action="/recipes/SearchRecipes" onsubmit="searchRecipes();return false;">
     <label for="tags">Tags:
-        <input type="text" value="" id="tags" name="tags" pattern="(?:[a-zA-Z0-9\-_]+(?:\s*,\s*[a-zA-Z0-9\-_]+)*)" onkeyup="checkEmpty( this );"/>
+        <input type="text" value="" id="tags" name="tags" pattern="(?:[a-zA-Z0-9\-_]+(?:\s*,\s*[a-zA-Z0-9\-_]+)*)" oninput="checkEmpty( this );"/>
     </label>
     <select id="availableTags" onChange="addTag();"></select>
     <input type="button" value="search" onclick="searchRecipes();"><br>
@@ -32,6 +32,7 @@
     function checkEmpty( text )
     {
         loadTags();
+        return true;
     }
     
     function addTag()
@@ -47,7 +48,7 @@
     
     function loadTags()
     {
-        disableForm();
+        //disableForm();
         
         var paramArray = new Array();
         paramArray[0] = "tags";
@@ -68,7 +69,7 @@
             {
                 alert('Error: ' + xhr.status);
             }
-            enableForm();
+            //enableForm();
         });        
     }
     
@@ -139,6 +140,24 @@
         enlace.href="javascript:showRecipe(" + recipe.id + ");";
         enlace.appendChild( document.createTextNode( recipe.title ) );
         div.appendChild( enlace );
+        
+        var icons = document.createElement("span");
+        icons.className="right";
+        
+        var editIconLink = document.createElement("a");
+        editIconLink.href= "/recipes/EditRecipe?id=" + recipe.id
+        var editIcon = document.createElement("img");
+        editIcon.src="/img/edit.png"
+        editIconLink.appendChild( editIcon );
+        
+        var deleteIconLink = document.createElement("a");
+        deleteIconLink.href="javascript:deleteRecipe(" +  recipe.id + ");";
+        var deleteIcon = document.createElement("img");
+        deleteIcon.src="/img/delete.png"
+        deleteIconLink.appendChild( deleteIcon );
+        icons.appendChild( editIconLink );
+        icons.appendChild( deleteIconLink );
+        div.appendChild( icons );       
         
         div.appendChild( document.createElement( "br"));
         
@@ -230,6 +249,14 @@
     {
         var div = ClearOptionsFast("recipeDetail");
         div.style.display = "none";
+    }
+    
+    function deleteRecipe( id )
+    {
+        if ( confirm("Deleted recipes can't be recovered. Are you sure ?") )
+        {
+            window.location.href="/recipes/DeleteRecipe?id=" + id ;
+        }
     }
     
 </script>

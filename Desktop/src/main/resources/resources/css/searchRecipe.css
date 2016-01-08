@@ -27,6 +27,14 @@ div.recipe span {
     float:right;
 }
 
+div.recipe span img {
+    width:1em;
+    height:1em;
+    cursor:pointer;
+    border:0;
+    margin-left:0.6em;
+}
+
 div#recipeDetail {
     position:absolute;
     display:none;

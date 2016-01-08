@@ -14,7 +14,6 @@ import es.ait.recetario.desktop.templates.TemplateFactory;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.sql.Connection;
-import java.sql.SQLException;
 import java.util.Properties;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
@@ -24,30 +23,28 @@ import javax.servlet.http.HttpServletResponse;
  *
  * @author aitkiar
  */
-public class NewRecipe extends Command
+public class EditRecipe extends Command
 {
 
     @Override
     public void processRequest(HttpServletRequest request, HttpServletResponse response, PrintWriter out) throws IOException, ServletException
     {
-        if ( "/recipes/NewRecipe".equals( request.getParameter("post")))
+        if ( "/recipes/EditRecipe".equals(request.getParameter("post")))
         {
             processPost( request, response, out );
             return;
         }
         
         Properties properties = new Properties();
-        properties.setProperty("id", "");
-        properties.setProperty("action", "/recipes/NewRecipe");
+        properties.setProperty("id", request.getParameter("id"));
+        properties.setProperty("action", "/recipes/EditRecipe");
         out.print( TemplateFactory.getTemplate( "newRecipe.html", properties ));
     }
     
+    
     private void processPost( HttpServletRequest request, HttpServletResponse response, PrintWriter out ) throws IOException, ServletException
     {
-        Recipe recipe = new Recipe();
-        recipe.setRecipeTitle( request.getParameter("title"));
-        recipe.setRecipe( request.getParameter("contentEditor"));
-        recipe.setTags( Utils.string2tags( request.getParameter("tags")));
+
         
         Connection connection = null;
         try
@@ -55,7 +52,12 @@ public class NewRecipe extends Command
             connection = BBDDManager.getInstance( null ).getConnection();
             connection.setAutoCommit( false );
             
-            new RecipeDAO().create( connection, recipe );
+            Recipe recipe = new RecipeDAO().search(connection, new Integer( request.getParameter("id")) );
+            recipe.setRecipeTitle( request.getParameter("title"));
+            recipe.setRecipe( request.getParameter("contentEditor"));
+            recipe.setTags( Utils.string2tags( request.getParameter("tags")));
+            
+            new RecipeDAO().update( connection, recipe );
             
             connection.commit();
             forward("/recipes/SearchRecipes", request, response, out);

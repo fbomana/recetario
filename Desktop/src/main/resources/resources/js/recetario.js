@@ -59,7 +59,7 @@ function ClearOptionsFast( id )
  * @param {type} callback
  * @returns {undefined}
  */
-function post( url, paramArray, callback )
+function post( url, paramArray, callback, async )
 {
     var xhr = new XMLHttpRequest();
     var params = "";
@@ -72,7 +72,7 @@ function post( url, paramArray, callback )
         }
         params += paramArray[i] + "=" + encodeURIComponent( paramArray[i+1] );
     }
-    xhr.open('post', url);
+    xhr.open('post', url, arguments.length == 3 ? async : true  );
     xhr.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
     xhr.setRequestHeader("Content-length", params.length);
     xhr.setRequestHeader("Connection", "close");
