@@ -93,6 +93,11 @@ public class Utils
      */
     public static List<String> string2tags( String string )
     {
+        return splitString( string, true );
+    }
+    
+    public static List<String> splitString( String string, boolean toLowerCase )
+    {
         List<String> result = new ArrayList<>();
         if ( string != null )
         {
@@ -101,7 +106,14 @@ public class Utils
             {
                 if ( !"".equals( tag.trim()))
                 {
-                    result.add( tag.trim().toLowerCase());
+                    if ( toLowerCase )
+                    {
+                        result.add( tag.trim().toLowerCase());
+                    }
+                    else
+                    {
+                        result.add( tag.trim());
+                    }
                 }
             }
         }

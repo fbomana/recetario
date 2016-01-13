@@ -28,6 +28,10 @@ function lightMenu()
     {
         id = "new";
     }
+    else if ( path == "/recipes/SynchronizeRecipes")
+    {
+        id = "synchronize";
+    }
     
     if ( id )
     {

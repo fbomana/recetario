@@ -8,6 +8,9 @@ package es.ait.recetario.desktop;
 import es.ait.recetario.desktop.commands.BBDD.BBDDManager;
 import es.ait.recetario.desktop.handlers.RecetarioHandler;
 import es.ait.recetario.desktop.preferences.Preferences;
+import java.io.IOException;
+import java.net.DatagramSocket;
+import java.net.ServerSocket;
 import java.sql.SQLException;
 import org.eclipse.jetty.server.Server;
 
@@ -19,6 +22,9 @@ public class Recetario
 {
     private Server server;
     private int port = 8080;
+    private final int MAX_PORT_NUMBER = 65535;
+    private final int MIN_PORT_NUMBER = 8080;
+    
     
 
     public String getPort()
@@ -45,8 +51,65 @@ public class Recetario
         
     }
     
+    private void findPort()
+    {
+        while ( !available( port ) )
+        {
+            port ++;
+        }
+    }
+    
+    /**
+     * Checks to see if a specific port is available.
+     *
+     * @param port the port to check for availability
+     */
+    private boolean available(int port) 
+    {
+        if ( port < MIN_PORT_NUMBER || port > MAX_PORT_NUMBER ) 
+        {
+            throw new IllegalArgumentException("Invalid start port: " + port);
+        }
+
+        ServerSocket ss = null;
+        DatagramSocket ds = null;
+        try 
+        {
+            ss = new ServerSocket(port);
+            ss.setReuseAddress(true);
+            ds = new DatagramSocket(port);
+            ds.setReuseAddress(true);
+            return true;
+        } 
+        catch (IOException e) 
+        {
+        } 
+        finally 
+        {
+            if (ds != null) 
+            {
+                ds.close();
+            }
+
+            if (ss != null) 
+            {
+                try 
+                {
+                    ss.close();
+                } 
+                catch (IOException e) 
+                {
+                    /* should not be thrown */
+                }
+            }
+        }
+
+        return false;
+    }
+    
     public void starServer() throws Exception
     {
+        findPort();
         server = new Server( port );
         server.setHandler( new RecetarioHandler());
         server.start();

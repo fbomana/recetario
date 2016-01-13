@@ -7,12 +7,14 @@ package es.ait.recetario.desktop.model;
 
 import es.ait.recetario.desktop.preferences.Preferences;
 import java.io.UnsupportedEncodingException;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Base64;
 import java.util.List;
 import java.util.Date;
 import javax.json.Json;
+import javax.json.JsonArray;
 import javax.json.JsonArrayBuilder;
 import javax.json.JsonObject;
 
@@ -31,6 +33,26 @@ public class Recipe
     private String recipeShareId;
     private List<String> tags;
 
+    public Recipe()
+    {   
+    }
+    
+    public Recipe( JsonObject json ) throws ParseException
+    {
+        SimpleDateFormat sdf = new SimpleDateFormat( "dd/MM/yyyy HH:mm:ss" );
+        recipeId = json.getInt( "id" );
+        recipeTitle = json.getString("title");
+        recipe = json.getString("recipe");
+        recipeDate = sdf.parse( json.getString("date"));
+        recipeUpdate = sdf.parse( json.getString( "update"));
+        recipeOrigin = json.getString( "origin" );
+        recipeShareId = json.getString( "shareId" );
+        JsonArray array = json.getJsonArray( "tags" );
+        for ( int i = 0; array != null && i < array.size(); i++ )
+        {
+            addTag( array.getString( i ));
+        }
+    }
     /**
      * @return the recipeId
      */

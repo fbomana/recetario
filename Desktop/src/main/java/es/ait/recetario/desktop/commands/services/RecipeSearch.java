@@ -30,11 +30,21 @@ public class RecipeSearch extends JSONServiceCommand
     @Override
     public void processRequest(HttpServletRequest request, HttpServletResponse response, PrintWriter out) throws IOException, ServletException
     {
-        List<String> tags = Utils.string2tags( request.getParameter("tags"));
+        
         try
             ( Connection connection = BBDDManager.getInstance("").getConnection())
         {
-            List<Recipe> recipes = new RecipeDAO().search(connection, tags, !"true".equals( request.getParameter("searchType")) );
+            List<Recipe> recipes;
+            if ( request.getParameter("importList") != null && !"".equals( request.getParameter("importList")))
+            {
+                List<String> shareIds = Utils.splitString(request.getParameter("importList"), false );
+                recipes = new RecipeDAO().shareIdSearch( connection, shareIds );
+            }
+            else
+            {
+                List<String> tags = Utils.string2tags( request.getParameter("tags"));
+                recipes = new RecipeDAO().search(connection, tags, !"true".equals( request.getParameter("searchType")) );
+            }
             JsonArrayBuilder builder = Json.createArrayBuilder();
             for ( Recipe recipe : recipes )
             {

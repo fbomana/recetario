@@ -34,11 +34,26 @@ public class RecipeDAO
      */
     public void create ( Connection connection, Recipe recipe ) throws SQLException
     {
+        create( connection, recipe, false );
+    }
+    
+    /**
+     * Stores a new recipe in the BBDD.
+     * 
+     * @param connection the connection that is used for the BBDD transaction.
+     * @param recipe the recipe to be stored. The recipeId value it's calculated during insert and updated in the recipe object.
+     * @throws SQLException 
+     */
+    private void create ( Connection connection, Recipe recipe, boolean importRecipe ) throws SQLException
+    {
         try
             ( PreparedStatement ps = connection.prepareStatement("insert into recipe ( recipe_title, recipe, recipe_date, recipe_update, recipe_origin, recipe_share_id ) values ( ?, ?, ?, ?, ?, ? )", new String[]{"RECIPE_ID"}))
         {
-            recipe.setRecipeDate( new Date());
-            recipe.setRecipeUpdate( recipe.getRecipeDate());
+            if ( ! importRecipe )
+            {
+                recipe.setRecipeDate( new Date());
+                recipe.setRecipeUpdate( recipe.getRecipeDate());
+            }
             ps.setString( 1, recipe.getRecipeTitle() );
             ps.setCharacterStream(2, new StringReader( recipe.getRecipe()));
             ps.setTimestamp(3, new Timestamp( recipe.getRecipeDate().getTime()));
@@ -57,7 +72,7 @@ public class RecipeDAO
         
         new TagDAO().updateTags( connection, recipe );
     }
-    
+ 
     /**
      * Updates all the information of a recipe in BBDD.
      * @param connection
@@ -66,9 +81,20 @@ public class RecipeDAO
      */
     public void update ( Connection connection, Recipe recipe ) throws SQLException
     {
+        update( connection, recipe, false );
+    }
+    
+    /**
+     * Updates all the information of a recipe in BBDD.
+     * @param connection
+     * @param recipe
+     * @throws SQLException 
+     */
+    private void update ( Connection connection, Recipe recipe, boolean importRecipe ) throws SQLException
+    {
         try
             ( PreparedStatement ps = connection.prepareStatement("update recipe set recipe_title=?, recipe=?,"
-                + " recipe_date=?, recipe_update=?, recipe_origin=?, recipe_share_id=? where recipe_id = ?"))
+                + " recipe_date=?, recipe_update=?, recipe_origin=?, recipe_share_id=? where " + ( importRecipe ? "recipe_share_id=?" : "recipe_id = ?")))
         {
             recipe.setRecipeUpdate( new Date());
             ps.setString( 1, recipe.getRecipeTitle() );
@@ -77,11 +103,61 @@ public class RecipeDAO
             ps.setTimestamp(4, new Timestamp( recipe.getRecipeUpdate().getTime()));
             ps.setString( 5, recipe.getRecipeOrigin());
             ps.setString( 6, recipe.getRecipeShareId());
-            ps.setInt( 7, recipe.getRecipeId());
+            if ( importRecipe )
+            {
+                ps.setString( 7, recipe.getRecipeShareId());    
+            }
+            else
+            {
+                ps.setInt( 7, recipe.getRecipeId());
+            }
             ps.executeUpdate();
         }
         
         new TagDAO().updateTags( connection, recipe );
+    }
+    
+    /**
+     * Import changes on a recipe
+     * @param connection
+     * @param recipe
+     * @throws SQLException 
+     */
+    public void importRecipe( Connection connection, Recipe recipe ) throws SQLException
+    {
+        int localId = getLocalId(connection, recipe.getRecipeShareId());
+        if ( localId != -1 )
+        {
+            recipe.setRecipeId( localId );
+            update( connection, recipe, true );
+        }
+        else
+        {
+            create( connection, recipe, true );
+        }
+    }
+    
+    /**
+     * Returns the localId for a imported recipe.
+     * @param connection
+     * @param shareId
+     * @return
+     * @throws SQLException 
+     */
+    public int getLocalId( Connection connection, String shareId ) throws SQLException
+    {
+        try (PreparedStatement ps = connection.prepareStatement( "select recipe_id from recipe where recipe_share_id = ?"))
+        {
+            ps.setString( 1, shareId );
+            try ( ResultSet rs = ps.executeQuery())
+            {
+                if ( rs.next())
+                {
+                    return rs.getInt("recipe_id");
+                }
+                return -1;
+            }
+        }
     }
     
     public void delete ( Connection connection, int id  ) throws SQLException
@@ -220,6 +296,50 @@ public class RecipeDAO
         return result;
     }
 
+    public List<Recipe> shareIdSearch( Connection connection, List<String> shareIds ) throws SQLException
+    {
+        String sql = "select a.recipe_id, a.recipe_title, a.recipe, a.recipe_date, "
+            + "a.recipe_update, a.recipe_origin, a.recipe_share_id, b.tag from recipe a, recipe_tags b where "
+            + "a.recipe_id = b.recipe_id ";
+        List<Recipe> result = new ArrayList<>();
+        if ( shareIds != null && !shareIds.isEmpty())
+        {
+            
+            sql+= " and a.recipe_share_id in ( ";
+            for( int i = 0; i < shareIds.size(); i ++ )
+            {
+                if ( i > 0 )
+                {
+                    sql+= ", ";
+                }
+                sql += "?";
+            }
+            sql += ") ";
+        }
+        sql += " order by recipe_update desc, a.recipe_id, b.tag";
+        try
+            (PreparedStatement ps = connection.prepareStatement(sql))
+        {
+            for ( int i = 0; i < shareIds.size(); i ++ )
+            {
+                ps.setString(i+1, shareIds.get( i ));
+            }
+            ResultSet rs = ps.executeQuery();
+            Recipe recipe = null;
+            while ( rs.next())
+            {
+                if ( recipe == null || rs.getInt( "recipe_id" ) != recipe.getRecipeId() )
+                {
+                    recipe = readRecipe( rs, true );
+                    result.add( recipe );
+                }
+                recipe.addTag( rs.getString( "tag"));
+            }
+            rs.close();
+        }
+        return result;
+    }
+    
     /**
      * Searchs for a specific recipe and get all the information about it.
      * @param connection
