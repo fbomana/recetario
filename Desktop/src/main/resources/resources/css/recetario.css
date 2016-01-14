@@ -37,6 +37,48 @@ input[type='text']:invalid {
     background: pink;
 }
 
+input[type='url'] {
+    padding: 0.2em;
+}
+
+input[type='url']:valid {
+    border: 1px solid green;
+    background: greenyellow;
+}
+
+input[type='url']:invalid {
+    border: 1px solid red;
+    background: pink;
+}
+
+input[type="button"] {
+    border:2px solid black;
+    padding:0.2em;
+    color:black;
+    font-weight: bold;
+    border-radius:0.4em;
+    margin-left:0.5em;
+    margin-right:0.5em;
+}
+
+input[type="submit"] {
+    border:2px solid black;
+    padding:0.2em;
+    color:black;
+    font-weight: bold;
+    border-radius:0.4em;
+    margin-left:0.5em;
+    margin-right:0.5em;
+}
+
+select {
+    border:1px solid black;
+    padding:0.2em;
+    color:black;
+    font-weight: bold;
+    border-radius:0.4em;    
+}
+
 textarea {
     padding: 0.2em;
 }

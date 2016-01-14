@@ -57,3 +57,22 @@ div#recipeDetail span.tags {
     padding-top:0.5em;
     color:darkgrey;
 }
+
+/*
+ * Synchronize screen
+ */
+div#upperDiv {
+    width:80%;
+}
+
+div#upperDiv label {
+    font-weight: bold;
+}
+
+div#upperDiv span {
+    float: right;
+}
+
+input#synchronizeURL {
+    width:70%;
+}

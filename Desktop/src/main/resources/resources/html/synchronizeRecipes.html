@@ -1,4 +1,5 @@
 <link rel="stylesheet" href="/css/searchRecipe.css">
+<script src="/js/marked.min.js"></script>
 <div id="content">
 <section>
     <h1>Synchronization source</h1>
@@ -11,8 +12,8 @@
 <section>
     <h1>Importable recipes</h1>
     <div id="upperDiv">
-        <label for="checkAll"><input type="checkbox" id="checkAll" onchange="checkAll()"> Check/Unchek all</label>
-        <input type="button" id="import" value="import" onClick="importRecipes();" form="fsynchronize">
+        <label for="checkAll"><input type="checkbox" id="checkAll" onchange="checkAll()" required> Check/Unchek all</label>
+        <span><input type="button" id="import" value="import" onClick="importRecipes();" form="fsynchronize"></span>
     </div>
     <div id="recipes">
         
@@ -51,6 +52,12 @@
         checkbox.id= recipe.shareId;
         checkbox.type="checkbox";
         checkbox.checked = false;
+        checkbox.onchange = function() {
+            if ( !this.checked )
+            {
+                document.getElementById("checkAll").checked = false;
+            }
+        }
         
         div.appendChild( checkbox );
         
@@ -84,7 +91,9 @@
         var paramArray = new Array();
         paramArray[0] = "id";
         paramArray[1] = "" + id;
-        post( '/services/ShowRecipe', paramArray, function ( ok, xhr ) {
+        paramArray[2] = "url";
+        paramArray[3] = document.getElementById("synchronizeURL").value;
+        post( '/services/ShowExternalRecipe', paramArray, function ( ok, xhr ) {
             if ( ok ) 
             {
                 printRecipe( JSON.parse( xhr.responseText ));
@@ -144,6 +153,12 @@
         
         
         div.style.display="block";
+    }
+    
+    function closeRecipe()
+    {
+        var div = ClearOptionsFast("recipeDetail");
+        div.style.display = "none";
     }
     
     function checkAll()
