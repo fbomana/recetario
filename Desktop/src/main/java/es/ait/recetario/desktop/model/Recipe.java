@@ -184,10 +184,10 @@ public class Recipe
             .add("id", recipeId )
             .add("title", recipeTitle )
             .add("recipe", recipe != null ? recipe : "")
-            .add("date", sdf.format( recipeDate ))
-            .add("update", sdf.format( recipeUpdate ))
-            .add("origin", recipeOrigin )
-            .add("shareId", getRecipeShareId() )
+            .add("date", recipeDate != null ? sdf.format( recipeDate ) : "" )
+            .add("update", recipeUpdate != null ? sdf.format( recipeUpdate ) : "" )
+            .add("origin", recipeOrigin != null ? recipeOrigin : "" )
+            .add("shareId", getRecipeShareId() != null ? getRecipeShareId() : "" )
             .add("tags", builder.build())
             .build();
                 
@@ -218,7 +218,7 @@ public class Recipe
      */
     public String getRecipeShareId()
     {
-        if ( recipeShareId == null )
+        if ( recipeShareId == null && recipeDate != null && recipeOrigin != null && recipeTitle != null)
         {
             try
             {

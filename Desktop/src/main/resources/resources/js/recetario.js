@@ -93,3 +93,39 @@ function post( url, paramArray, callback, async )
     };
     xhr.send( params );
 }
+
+/**
+ * Makes a get ajax call.
+ * @param {type} url
+ * @param {type} paramArray
+ * @param {type} callback
+ * @param {type} async
+ * @returns {undefined}
+ */
+function get( url, paramArray, callback, async )
+{
+    var xhr = new XMLHttpRequest();
+    var params = "";
+
+    for ( var i = 0; paramArray && i < paramArray.length; i = i + 2 )
+    {
+        if ( i > 0 )
+        {
+            params+="&";
+        }
+        params += paramArray[i] + "=" + encodeURIComponent( paramArray[i+1] );
+    }
+    xhr.open('GET', url + "?" + params, arguments.length == 3 ? async : true  );
+
+    // Track the state changes of the request.
+    xhr.onreadystatechange = function () 
+    {
+        var DONE = 4;
+        var OK = 200;
+        if (xhr.readyState === DONE) 
+        {
+            callback( xhr.status === OK, xhr );
+        }
+    };
+    xhr.send( params );
+}

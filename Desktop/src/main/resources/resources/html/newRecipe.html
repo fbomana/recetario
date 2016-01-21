@@ -7,7 +7,7 @@
     <h1>New Recipe</h1>
     <form method="post" action="{action}" name="newRecipe">
         <input type="hidden" name="post" value="{action}"/>
-        <input type="hidden" name="id" value="{id}"/>
+        <input type="hidden" name="id" id="id" value="{id}"/>
         <label for="title">Title:<br>
             <input type="text" value="" required id="title" name="title"/>
         </label><br>
@@ -34,8 +34,74 @@
 
 function init()
 {
+    var id = "{id}";
+
+    var recipe;
+
+    if ( {reloadBackup} )
+    {
+        get( '/services/RecipeSessionBackup', null, function ( ok, xhr ) {
+            if ( ok ) 
+            {
+                recipe = JSON.parse( xhr.responseText );
+
+                document.getElementById("title").value = recipe.title;
+                document.getElementById("contentEditor").value = recipe.recipe;
+                document.getElementById("tags").value = recipe.tags;
+                if ( recipe.id != -1 )
+                {
+                    document.getElementById("id").value = recipe.id;
+                    id = recipe.id;
+                }
+            } 
+            else 
+            {
+                alert('Error: ' + xhr.status);
+            }
+            init2( recipe );
+        }, false );
+    }
+    else if ( id )
+    {    
+        var paramArray = new Array();
+        paramArray[0] = "id";
+        paramArray[1] = "" + id;
+        post( '/services/ShowRecipe', paramArray, function ( ok, xhr ) {
+            if ( ok ) 
+            {
+                recipe = JSON.parse( xhr.responseText );
+
+                document.getElementById("title").value = recipe.title;
+                document.getElementById("contentEditor").value = recipe.recipe;
+                document.getElementById("tags").value = recipe.tags;
+            } 
+            else 
+            {
+                alert('Error: ' + xhr.status);
+            }
+            init2( recipe );
+        }, false );
+    }
+    else
+    {
+        init2();
+    }
+}
+
+function init2( recipe )
+{
+    new Vue({
+      el: '#editor',
+      data: {
+        input: ( recipe ? recipe.recipe : '')
+      },
+      filters: {
+        marked: marked
+      }
+    })
     resizeElements();
     loadTags();
+    setTimeout( backup, {recipeBackupInterval} );
 }
 
 function resizeElements( event )
@@ -87,41 +153,33 @@ function addTag()
 window.onresize = resizeElements;
 window.onload = init;
 
-var id = "{id}";
 
-var recipe;
 
-if ( id )
-{    
+function backup()
+{
     var paramArray = new Array();
-    paramArray[0] = "id";
-    paramArray[1] = "" + id;
-    post( '/services/ShowRecipe', paramArray, function ( ok, xhr ) {
+    paramArray[0] = "title";
+    paramArray[1] = document.getElementById("title").value;
+    paramArray[2] = "recipe";
+    paramArray[3] = document.getElementById("contentEditor").value;
+    paramArray[4] = "tags";
+    paramArray[5] = document.getElementById("tags").value;
+    if ( document.getElementById("id").value )
+    {
+        paramArray[6] = "id";
+        paramArray[7] = document.getElementById("id").value;
+    }
+    post( '/services/RecipeSessionBackup', paramArray, function ( ok, xhr ) {
         if ( ok ) 
         {
-            recipe = JSON.parse( xhr.responseText );
-            
-            document.getElementById("title").value = recipe.title;
-            document.getElementById("contentEditor").value = recipe.recipe;
-            document.getElementById("tags").value = recipe.tags;
-            loadTags();
+            setTimeout( backup, {recipeBackupInterval} );
         } 
         else 
         {
             alert('Error: ' + xhr.status);
         }
-    }, false );
+    }, true );
+    
 }
-
-new Vue({
-  el: '#editor',
-  data: {
-    input: ( recipe ? recipe.recipe : '')
-  },
-  filters: {
-    marked: marked
-  }
-})
-
 
 </script>

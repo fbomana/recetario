@@ -6,13 +6,15 @@
 package es.ait.recetario.desktop;
 
 import es.ait.recetario.desktop.commands.BBDD.BBDDManager;
-import es.ait.recetario.desktop.handlers.RecetarioHandler;
+import es.ait.recetario.desktop.handlers.RecetarioBaseServlet;
 import es.ait.recetario.desktop.preferences.Preferences;
 import java.io.IOException;
 import java.net.DatagramSocket;
 import java.net.ServerSocket;
 import java.sql.SQLException;
 import org.eclipse.jetty.server.Server;
+import org.eclipse.jetty.servlet.ServletContextHandler;
+import org.eclipse.jetty.servlet.ServletHolder;
 
 /**
  *
@@ -110,8 +112,15 @@ public class Recetario
     public void starServer() throws Exception
     {
         findPort();
+
         server = new Server( port );
-        server.setHandler( new RecetarioHandler());
+
+        ServletContextHandler context = new ServletContextHandler( ServletContextHandler.SESSIONS);
+        context.setContextPath("/");
+        server.setHandler(context);
+        ServletHolder holder = new ServletHolder(new RecetarioBaseServlet());
+        context.addServlet(holder, "/*");
+
         server.start();
         server.dumpStdErr();
         server.join();

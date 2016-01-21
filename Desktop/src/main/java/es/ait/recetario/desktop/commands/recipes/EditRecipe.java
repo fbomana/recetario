@@ -38,6 +38,13 @@ public class EditRecipe extends Command
         Properties properties = new Properties();
         properties.setProperty("id", request.getParameter("id"));
         properties.setProperty("action", "/recipes/EditRecipe");
+        properties.setProperty("recipeBackupInterval", preferences.getRecipeBackupInterval() + "" );
+        properties.setProperty("reloadBackup", "false" );
+        if ( session.getAttribute("backup_recipe") != null )
+        {
+            Recipe recipe = (Recipe)session.getAttribute("backup_recipe");
+            properties.setProperty( "reloadBackup", request.getParameter("id").equals( "" + recipe.getRecipeId() ) + "");
+        }
         out.print( TemplateFactory.getTemplate( "newRecipe.html", properties ));
     }
     
@@ -58,7 +65,7 @@ public class EditRecipe extends Command
             recipe.setTags( Utils.string2tags( request.getParameter("tags")));
             
             new RecipeDAO().update( connection, recipe );
-            
+            session.getAttribute("backup_recipe");
             connection.commit();
             forward("/recipes/SearchRecipes", request, response, out);
         }

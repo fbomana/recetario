@@ -24,6 +24,7 @@ public class Preferences
     private String derbyFolder;
     private File file;
     private String recetarioName;
+    private int recipeBackupInterval = 120000;
     
     /**
      * Default constructor. It's private to force use the singleton pattern.
@@ -62,6 +63,7 @@ public class Preferences
             prop.load( in );
             derbyFolder = prop.getProperty("derbyFolder", "data");
             recetarioName = prop.getProperty("recetarioName", null );
+            recipeBackupInterval = Integer.parseInt( prop.getProperty("recipeBackupInternal", "120000" ));
         }
         catch ( Exception e )
         {
@@ -95,7 +97,8 @@ public class Preferences
             writer.write("\n");
             writer.write("# BBDD folder\n");
             writer.write("derbyFolder=" + ( derbyFolder != null ? derbyFolder : "")+ "\n");
-            
+            writer.write("# Backup interval\n");
+            writer.write("recipeBackupInterval=" + recipeBackupInterval + "\n");            
         }
         catch ( IOException e )
         {
@@ -158,4 +161,13 @@ public class Preferences
         this.recetarioName = recetarioName;
     }
     
+    public int getRecipeBackupInterval()
+    {
+        return recipeBackupInterval;
+    }
+    
+    public void setRecipeBackupInterval( int recipeBackupInterval )
+    {
+        this.recipeBackupInterval = recipeBackupInterval;
+    }
 }

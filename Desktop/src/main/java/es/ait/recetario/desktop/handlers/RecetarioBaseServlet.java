@@ -5,29 +5,39 @@
  */
 package es.ait.recetario.desktop.handlers;
 
-import es.ait.recetario.desktop.Utils;
 import java.io.IOException;
 import javax.servlet.ServletException;
+import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import org.eclipse.jetty.server.Request;
-import org.eclipse.jetty.server.handler.AbstractHandler;
 
 /**
  *
  * @author aitkiar
  */
-public class RecetarioHandler extends AbstractHandler
+public class RecetarioBaseServlet extends HttpServlet
 {
-    @Override
-    public void handle(String resource, Request baseRequest, HttpServletRequest request, HttpServletResponse response ) throws IOException, ServletException
+    
+    
+    public void processRequest( HttpServletRequest request, HttpServletResponse response ) throws ServletException, IOException
     {
+        String resource = request.getRequestURI();
         BaseHandler handler = HandlerFactory.getHandler( resource );
         response.setContentType( handler.getContentType(resource, request, response) );
-        response.setStatus(HttpServletResponse.SC_OK);
-        baseRequest.setHandled( true );
-
         handler.handle( resource, request, response );
-
     }
+    
+    @Override
+    protected void doGet( HttpServletRequest request, HttpServletResponse response ) throws ServletException, IOException
+    {
+        processRequest( request, response );
+    }
+    
+    @Override
+    protected void doPost( HttpServletRequest request, HttpServletResponse response ) throws ServletException, IOException
+    {
+        processRequest( request, response );
+    }
+    
 }

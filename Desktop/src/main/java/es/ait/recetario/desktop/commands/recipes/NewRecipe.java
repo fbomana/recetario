@@ -39,6 +39,16 @@ public class NewRecipe extends Command
         Properties properties = new Properties();
         properties.setProperty("id", "");
         properties.setProperty("action", "/recipes/NewRecipe");
+        properties.setProperty("reloadBackup", "false" );
+        properties.setProperty("recipeBackupInterval", preferences.getRecipeBackupInterval() + "" );
+        if ( session.getAttribute("backup_recipe") != null )
+        {
+            Recipe recipe = ( Recipe ) session.getAttribute("backup_recipe");
+            if ( recipe.getRecipeId() == -1 )
+            {
+                properties.setProperty("reloadBackup", "true" );
+            }
+        }
         out.print( TemplateFactory.getTemplate( "newRecipe.html", properties ));
     }
     
@@ -58,6 +68,7 @@ public class NewRecipe extends Command
             new RecipeDAO().create( connection, recipe );
             
             connection.commit();
+            session.getAttribute("backup_recipe");
             forward("/recipes/SearchRecipes", request, response, out);
         }
         catch ( Exception e )

@@ -11,6 +11,7 @@ import java.io.PrintWriter;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
 
 /**
  *
@@ -19,10 +20,12 @@ import javax.servlet.http.HttpServletResponse;
 public abstract class Command
 {
     protected Preferences preferences;
+    protected HttpSession session;
     
     public void handle( HttpServletRequest request, HttpServletResponse response, PrintWriter out ) throws IOException, ServletException
     {
         preferences = Preferences.getInstance();
+        session = request.getSession(true);
         if ( preferences.isFirstRun() )
         {
             preferences.setFirstRun( false );
