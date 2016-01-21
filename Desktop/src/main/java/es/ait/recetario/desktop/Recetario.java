@@ -141,7 +141,6 @@ public class Recetario
         {
             try
             {
-                System.out.println("------------------------------------------------------------------");
                 try
                 {
                     BBDDManager.getInstance(Preferences.getInstance().getDerbyFolder()).shutDown();

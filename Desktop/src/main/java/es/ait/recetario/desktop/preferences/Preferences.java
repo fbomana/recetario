@@ -18,7 +18,7 @@ import java.util.Properties;
 public class Preferences
 {
     private static Preferences instance;
-    public static final String version = "0.1.0";
+    public static final String version = "0.3.0";
     
     private boolean firstRun = false;
     private String derbyFolder;
@@ -63,7 +63,7 @@ public class Preferences
             prop.load( in );
             derbyFolder = prop.getProperty("derbyFolder", "data");
             recetarioName = prop.getProperty("recetarioName", null );
-            recipeBackupInterval = Integer.parseInt( prop.getProperty("recipeBackupInternal", "120000" ));
+            recipeBackupInterval = Integer.parseInt( prop.getProperty("recipeBackupInterval", "120000" ));
         }
         catch ( Exception e )
         {

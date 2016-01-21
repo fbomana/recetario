@@ -64,7 +64,6 @@ public class BBDDManager
             }
             catch ( SQLException e )
             {
-                System.out.println( e.getSQLState() + " -- " + e.getErrorCode() );
                 if ( "XJ041".equals(e.getSQLState()) ) 
                 {
                     System.out.println("La BBDD ya existe");

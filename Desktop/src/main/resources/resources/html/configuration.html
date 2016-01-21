@@ -1,0 +1,25 @@
+<link href="/css/configuration.css" rel="stylesheet">
+<div id="content">
+    <h1>Configuration</h1>
+    <form method="post" action="/recetario/Configuration" name="fconf" id="fconf">
+        <input type="hidden" name="post" value="/recetario/Configuration">
+        <label for="recetarioName">
+            Name:<br>
+        </label>
+        <input type="text" value="{recetarioName}" name="recetarioName" id="recetarioName" required  onChange="clearMessage();"/><br>
+        <label for="recipeBackupInterval">
+            New/Edit Recipe backup interval ( miliseconds ):<br>
+        </label>
+        <input type="number" value="{recipeBackupInterval}" name="recipeBackupInterval" id="recipeBackupInterval" required min="30000" onChange="clearMessage();"/><br>
+        <input type="submit" value="send"/>
+    </form>
+    <p id="message">{message}</p>
+</div>
+<script>
+    function clearMessage()
+    {
+        ClearOptionsFast( "message" );
+    }
+</script>
+    
+    

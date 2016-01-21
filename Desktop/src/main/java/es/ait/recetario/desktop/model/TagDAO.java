@@ -41,7 +41,6 @@ public class TagDAO
             catch ( SQLException e )
             {
                 // We ignore duplicate key errors.
-                System.out.println( e.getErrorCode() + " -- " + e.getSQLState() );
                 if (!(e.getErrorCode() == 20000 && "23505".equals(e.getSQLState())))
                 {
                     throw e;
