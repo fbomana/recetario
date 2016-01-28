@@ -36,7 +36,7 @@ public class CommandHandler implements BaseHandler
         }
         catch ( Exception e )
         {
-            out.println ( Utils.exceptionToHTMLString( e ));
+            out.println ( Utils.exceptionToHTMLString( request, e ));
         }
         finally
         {

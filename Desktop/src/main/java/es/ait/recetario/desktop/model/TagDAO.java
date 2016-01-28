@@ -123,4 +123,45 @@ public class TagDAO
         }
         return result;
     }
+    
+    public List<String> searchRelatedTags( Connection connection, List<String> includedTags ) throws SQLException
+    {
+        String sql = "select distinct tag from recipe_tags";
+        List<String> result = new ArrayList<>();
+        if ( !includedTags.isEmpty())
+        {
+            sql+= " where recipe_id in ( " +
+                "select recipe_id from recipe_tags where tag in ";
+            String separator = " ";
+            String selector = "(";
+            for ( String tag : includedTags )
+            {
+                selector+= separator + "?";
+                separator = ", ";
+            }
+            selector += " )";
+            
+            sql += selector + ") and tag not in " + selector;
+                    
+        }
+        sql += " order by tag";
+        try
+            (PreparedStatement ps = connection.prepareStatement( sql ))
+        {
+            int i = 1;
+            for ( String tag : includedTags )
+            {
+                ps.setString( i, tag );
+                ps.setString( i + includedTags.size(), tag );
+                i++;
+            }
+            ResultSet rs = ps.executeQuery();
+            while ( rs.next())
+            {
+                result.add( rs.getString("tag"));
+            }
+            rs.close();
+        }
+        return result;
+    }
 }

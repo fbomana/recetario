@@ -11,6 +11,15 @@
             New/Edit Recipe backup interval ( miliseconds ):<br>
         </label>
         <input type="number" value="{recipeBackupInterval}" name="recipeBackupInterval" id="recipeBackupInterval" required min="30000" onChange="clearMessage();"/><br>
+        <label for="readOnlyMode">
+            Read only mode:<br>
+        </label>
+        <select name="readOnlyMode" id="readOnlyMode" onChange="clearMessage();">
+            <option value="0">Full Edit</option>
+            <option value="1">Local Edit</option>
+            <option value="2"> Read Only</option>
+        </select><br>
+        
         <input type="submit" value="send"/>
     </form>
     <p id="message">{message}</p>
@@ -20,6 +29,10 @@
     {
         ClearOptionsFast( "message" );
     }
+    
+    window.onload = function () {
+        document.getElementById("readOnlyMode").options.selectedIndex = {readOnlyMode};
+    };
 </script>
     
     

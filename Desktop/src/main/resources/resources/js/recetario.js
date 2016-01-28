@@ -32,10 +32,21 @@ function lightMenu()
     {
         id = "synchronize";
     }
+    else if ( path == "/recetario/Configuration")
+    {
+        id="configuration";
+    }
     
     if ( id )
     {
         document.getElementById( id ).className="menuSelected";
+    }
+    
+    if ( !canEdit )
+    {
+        document.getElementById("new").style.display = "none";
+        document.getElementById("synchronize").style.display = "none";
+        document.getElementById("configuration").style.display = "none";
     }
 }
 /**

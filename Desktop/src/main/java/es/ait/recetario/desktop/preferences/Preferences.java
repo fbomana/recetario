@@ -25,6 +25,7 @@ public class Preferences
     private File file;
     private String recetarioName;
     private int recipeBackupInterval = 120000;
+    private ReadOnlyMode mode;
     
     /**
      * Default constructor. It's private to force use the singleton pattern.
@@ -64,6 +65,7 @@ public class Preferences
             derbyFolder = prop.getProperty("derbyFolder", "data");
             recetarioName = prop.getProperty("recetarioName", null );
             recipeBackupInterval = Integer.parseInt( prop.getProperty("recipeBackupInterval", "120000" ));
+            mode = ReadOnlyMode.getMode( prop.getProperty("mode", "1"));
         }
         catch ( Exception e )
         {
@@ -98,7 +100,8 @@ public class Preferences
             writer.write("# BBDD folder\n");
             writer.write("derbyFolder=" + ( derbyFolder != null ? derbyFolder : "")+ "\n");
             writer.write("# Backup interval\n");
-            writer.write("recipeBackupInterval=" + recipeBackupInterval + "\n");            
+            writer.write("recipeBackupInterval=" + recipeBackupInterval + "\n");
+            writer.write("mode=" + mode.getMode() + "\n");
         }
         catch ( IOException e )
         {
@@ -169,5 +172,21 @@ public class Preferences
     public void setRecipeBackupInterval( int recipeBackupInterval )
     {
         this.recipeBackupInterval = recipeBackupInterval;
+    }
+
+    /**
+     * @return the mode
+     */
+    public ReadOnlyMode getMode()
+    {
+        return mode;
+    }
+
+    /**
+     * @param mode the mode to set
+     */
+    public void setMode(ReadOnlyMode mode)
+    {
+        this.mode = mode;
     }
 }

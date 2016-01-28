@@ -66,7 +66,7 @@ public class FirstRun extends Command
                 properties.setProperty("defaultFolderValue", preferences.getDerbyFolder() != null ? preferences.getDerbyFolder() : ( System.getProperty("user.home") + "/.recetario/data"));
                 properties.setProperty("errorMessage", e.getMessage());
                 properties.setProperty("initialResource", request.getParameter("initialResource"));
-                out.print( TemplateFactory.getTemplate( "firstRun.html", properties ));
+                out.print( TemplateFactory.getTemplate( request, "firstRun.html", properties ));
                 return;
             }
         }
@@ -76,7 +76,7 @@ public class FirstRun extends Command
             properties.setProperty("defaultFolderValue", System.getProperty("user.home") + "/.recetario/data");
             properties.setProperty("errorMessage", "");
             properties.setProperty("initialResource", request.getRequestURI() );
-            out.print( TemplateFactory.getTemplate( "firstRun.html", properties ));
+            out.print( TemplateFactory.getTemplate( request, "firstRun.html", properties ));
         }
     }
     

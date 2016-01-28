@@ -4,7 +4,7 @@
 <section>
 <form method="post" action="/recipes/SearchRecipes" onsubmit="searchRecipes();return false;">
     <label for="tags">Tags:
-        <input type="text" value="" id="tags" name="tags" pattern="(?:[a-zA-Z0-9\-_]+(?:\s*,\s*[a-zA-Z0-9\-_]+)*)" oninput="checkEmpty( this );"/>
+        <input type="text" value="" id="tags" name="tags" pattern="(?:[a-zA-Z0-9\-_]+(?:\s*,\s*[a-zA-Z0-9\-_]+)*)" onchange="checkEmpty( this );" />
     </label>
     <select id="availableTags" onChange="addTag();"></select>
     <input type="button" value="search" onclick="searchRecipes();"><br>
@@ -21,6 +21,8 @@
 </div>
 <div id="recipeDetail"></div>
 <script>
+    var canEdit = {canEdit};
+    
     window.onload = init;
     
     function init()
@@ -52,7 +54,12 @@
         
         var paramArray = new Array();
         paramArray[0] = "tags";
-        paramArray[1] = document.getElementById( "tags" ).value;            
+        paramArray[1] = document.getElementById( "tags" ).value;
+        if ( document.getElementById( "searchType" ).checked )
+        {
+            paramArray[2] = "related";
+            paramArray[3] = "1";
+        }
         
         post( '/services/TagSearch', paramArray, function ( ok, xhr ) {
             if ( ok ) 
@@ -64,6 +71,7 @@
                 {
                     select.options[i+1] = new Option( tags[i], tags[i], false, false );
                 }
+                searchRecipes();
             } 
             else 
             {
@@ -141,23 +149,26 @@
         enlace.appendChild( document.createTextNode( recipe.title ) );
         div.appendChild( enlace );
         
-        var icons = document.createElement("span");
-        icons.className="right";
-        
-        var editIconLink = document.createElement("a");
-        editIconLink.href= "/recipes/EditRecipe?id=" + recipe.id
-        var editIcon = document.createElement("img");
-        editIcon.src="/img/edit.png"
-        editIconLink.appendChild( editIcon );
-        
-        var deleteIconLink = document.createElement("a");
-        deleteIconLink.href="javascript:deleteRecipe(" +  recipe.id + ");";
-        var deleteIcon = document.createElement("img");
-        deleteIcon.src="/img/delete.png"
-        deleteIconLink.appendChild( deleteIcon );
-        icons.appendChild( editIconLink );
-        icons.appendChild( deleteIconLink );
-        div.appendChild( icons );       
+        if ( canEdit )
+        {
+            var icons = document.createElement("span");
+            icons.className="right";
+
+            var editIconLink = document.createElement("a");
+            editIconLink.href= "/recipes/EditRecipe?id=" + recipe.id
+            var editIcon = document.createElement("img");
+            editIcon.src="/img/edit.png"
+            editIconLink.appendChild( editIcon );
+
+            var deleteIconLink = document.createElement("a");
+            deleteIconLink.href="javascript:deleteRecipe(" +  recipe.id + ");";
+            var deleteIcon = document.createElement("img");
+            deleteIcon.src="/img/delete.png"
+            deleteIconLink.appendChild( deleteIcon );
+            icons.appendChild( editIconLink );
+            icons.appendChild( deleteIconLink );
+            div.appendChild( icons );
+        }
         
         div.appendChild( document.createElement( "br"));
         

@@ -46,7 +46,7 @@ public class SynchronizeRecipes extends Command
         }
         
         Properties properties = new Properties();
-        out.print( TemplateFactory.getTemplate( "synchronizeRecipes.html", properties ));
+        out.print( TemplateFactory.getTemplate( request, "synchronizeRecipes.html", properties ));
     }
     
     private void processPost(HttpServletRequest request, HttpServletResponse response, PrintWriter out) throws IOException, ServletException

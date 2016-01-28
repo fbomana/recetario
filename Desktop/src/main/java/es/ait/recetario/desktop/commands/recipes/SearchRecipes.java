@@ -21,7 +21,7 @@ public class SearchRecipes extends Command
     public void processRequest(HttpServletRequest request, HttpServletResponse response, PrintWriter out) throws IOException, ServletException
     {
         Properties properties = new Properties();
-        out.print( TemplateFactory.getTemplate( "searchRecipes.html", properties ));
+        out.print( TemplateFactory.getTemplate( request, "searchRecipes.html", properties ));
     }
     
 }

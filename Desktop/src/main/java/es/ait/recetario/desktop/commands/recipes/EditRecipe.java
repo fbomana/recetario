@@ -45,7 +45,7 @@ public class EditRecipe extends Command
             Recipe recipe = (Recipe)session.getAttribute("backup_recipe");
             properties.setProperty( "reloadBackup", request.getParameter("id").equals( "" + recipe.getRecipeId() ) + "");
         }
-        out.print( TemplateFactory.getTemplate( "newRecipe.html", properties ));
+        out.print( TemplateFactory.getTemplate( request, "newRecipe.html", properties ));
     }
     
     

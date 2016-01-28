@@ -8,6 +8,7 @@ package es.ait.recetario.desktop.commands.recetario;
 import es.ait.recetario.desktop.commands.Command;
 import es.ait.recetario.desktop.model.Recipe;
 import es.ait.recetario.desktop.preferences.Preferences;
+import es.ait.recetario.desktop.preferences.ReadOnlyMode;
 import es.ait.recetario.desktop.templates.TemplateFactory;
 import java.io.IOException;
 import java.io.PrintWriter;
@@ -33,12 +34,14 @@ public class Configuration extends Command
         {
             preferences.setRecetarioName( request.getParameter("recetarioName"));
             preferences.setRecipeBackupInterval( Integer.parseInt( request.getParameter("recipeBackupInterval")));
+            preferences.setMode( ReadOnlyMode.getMode( request.getParameter("readOnlyMode")));
             preferences.save();
             properties.setProperty("message", "Configuration saved");
         }
         properties.setProperty("recetarioName", preferences.getRecetarioName());
         properties.setProperty("recipeBackupInterval", preferences.getRecipeBackupInterval()+ "");
-        out.print( TemplateFactory.getTemplate( "configuration.html", properties ));
+        properties.setProperty("readOnlyMode", preferences.getMode().getMode() + "");
+        out.print( TemplateFactory.getTemplate( request, "configuration.html", properties ));
 
     }
     

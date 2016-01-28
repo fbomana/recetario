@@ -34,7 +34,15 @@ public class TagSearch extends JSONServiceCommand
         try
             ( Connection connection = BBDDManager.getInstance("").getConnection())
         {
-            List<String> tags = new TagDAO().searchTags(connection, excludedTags);
+            List<String> tags;
+            if ( "1".equals( request.getParameter("related")))
+            {
+                tags = new TagDAO().searchRelatedTags(connection, excludedTags);
+            }
+            else
+            {
+                tags = new TagDAO().searchTags(connection, excludedTags);
+            }
             JsonArrayBuilder builder = Json.createArrayBuilder();
             for ( String tag : tags )
             {

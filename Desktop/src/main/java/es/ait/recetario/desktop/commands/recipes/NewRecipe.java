@@ -49,7 +49,7 @@ public class NewRecipe extends Command
                 properties.setProperty("reloadBackup", "true" );
             }
         }
-        out.print( TemplateFactory.getTemplate( "newRecipe.html", properties ));
+        out.print( TemplateFactory.getTemplate( request, "newRecipe.html", properties ));
     }
     
     private void processPost( HttpServletRequest request, HttpServletResponse response, PrintWriter out ) throws IOException, ServletException

@@ -5,6 +5,8 @@
  */
 package es.ait.recetario.desktop;
 
+import es.ait.recetario.desktop.preferences.Preferences;
+import es.ait.recetario.desktop.preferences.ReadOnlyMode;
 import es.ait.recetario.desktop.templates.TemplateFactory;
 import java.awt.Desktop;
 import java.io.ByteArrayOutputStream;
@@ -14,6 +16,7 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.List;
+import javax.servlet.http.HttpServletRequest;
 
 /**
  *
@@ -46,14 +49,14 @@ public class Utils
      * @param e
      * @return 
      */
-    public static String exceptionToHTMLString( Exception e ) throws IOException
+    public static String exceptionToHTMLString( HttpServletRequest request, Exception e ) throws IOException
     {
         ByteArrayOutputStream bos = new ByteArrayOutputStream();
         PrintStream ps = new PrintStream( bos );
         e.printStackTrace(ps);
         ps.close();
         String error = bos.toString();
-        return TemplateFactory.getRawTemplate("errortemplate.html", null).replace("----------------",  error );
+        return TemplateFactory.getRawTemplate(request, "errortemplate.html", null).replace("----------------",  error );
     }
     
     /**
@@ -61,9 +64,9 @@ public class Utils
      * @param body
      * @return 
      */
-    public static String contentsToHtml( String contents ) throws IOException
+    public static String contentsToHtml( HttpServletRequest request, String contents ) throws IOException
     {
-        return TemplateFactory.getRawTemplate("basictemplate.html", null).replace("----------------",  contents != null ? contents : "");
+        return TemplateFactory.getRawTemplate(request, "basictemplate.html", null).replace("----------------",  contents != null ? contents : "");
     }
     
     /**
@@ -135,5 +138,23 @@ public class Utils
             separator = ", ";
         }
         return result;
+    }
+    
+    public static boolean canEdit( HttpServletRequest request )
+    {
+        if ( Preferences.getInstance().getMode().equals( ReadOnlyMode.READONLY ))
+        {
+            return false;
+        }
+        else if ( Preferences.getInstance().getMode().equals( ReadOnlyMode.FULLEDIT ))
+        {
+            return true;
+        }
+        else if ( Preferences.getInstance().getMode().equals( ReadOnlyMode.LOCALEDIT ))
+        {
+            System.out.println( request.getRemoteAddr());
+            return request.getRemoteAddr().equals("127.0.0.1");
+        }
+        return false;
     }
 }
