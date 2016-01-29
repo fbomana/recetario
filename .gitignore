@@ -19,3 +19,4 @@ Desktop/target
 
 # Run Byproducts
 Desktop/derby.log
+/Server/target/

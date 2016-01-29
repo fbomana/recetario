@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+    The context parameter can be changed after deploy in tomcat editing the 
+    correspondent recetario.xml file created in tomcat-base/conf/Catalina/localhost
+-->
+<Context path="/recetario" reloadable="true">
+    <Parameter name="es.ait.recetario.database.host" value="localhost" override="false"/>
+    <Parameter name="es.ait.recetario.database.password" value="recetario" override="false"/>
+    <Parameter name="es.ait.recetario.database.user" value="recetario" override="false"/>
+    
+    <Resource name="jdbc/recetarioDatasource" auth="Container" type="javax.sql.DataSource"
+               maxActive="30" maxIdle="10" maxWait="10000"
+               username="recetario" password="recetario" driverClassName="com.mysql.jdbc.Driver"
+               url="jdbc:mysql://localhost:3306/recetario"/>
+    <ResourceLink name="jdbc/recetarioDatasource" global="jdbc/recetarioDatasource" type="javax.sql.DataSource" />
+</Context>
