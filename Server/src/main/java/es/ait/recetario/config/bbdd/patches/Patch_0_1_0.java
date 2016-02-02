@@ -86,12 +86,12 @@ public class Patch_0_1_0 implements BBDDPatch
         try ( PreparedStatement ps = connection.prepareStatement("create table preferences ("
                 + " app_version varchar(20) not null,"
                 + " name varchar( 512 ) not null,"
-                + " autosave_internal int not null )");)
+                + " autosave_interval int not null )");)
         {
             ps.executeUpdate();
         }
         
-        try ( PreparedStatement ps = connection.prepareStatement("insert into preferences ( app_version, name, autosave_internal ) values ( '0.1.0', 'default', 30000 )"))
+        try ( PreparedStatement ps = connection.prepareStatement("insert into preferences ( app_version, name, autosave_interval ) values ( '0.1.0', 'default', 30000 )"))
         {
             ps.executeUpdate();
         }

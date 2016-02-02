@@ -55,7 +55,7 @@ public class Preferences
             {
                 version = rs.getString("app_version");
                 name = rs.getString("name");
-                autoSaveInterval = rs.getInt( "autosave_ internal");
+                autoSaveInterval = rs.getInt( "autosave_interval");
                 loaded = true;
             }
         }
@@ -72,8 +72,7 @@ public class Preferences
     public void save() throws SQLException
     {
         try ( Connection connection = BBDDManager.getInstance().getConnection();
-            PreparedStatement ps = connection.prepareStatement("update preferences set name=?, autosave_internal=?");
-            ResultSet rs = ps.executeQuery())
+            PreparedStatement ps = connection.prepareStatement("update preferences set name=?, autosave_interval=?");)
         {
             ps.setString( 1, name );
             ps.setInt( 2, autoSaveInterval );

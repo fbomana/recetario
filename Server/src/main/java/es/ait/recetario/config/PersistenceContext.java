@@ -12,6 +12,7 @@ import org.springframework.core.env.Environment;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 import org.springframework.orm.jpa.JpaTransactionManager;
 import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean;
+import org.springframework.transaction.annotation.EnableTransactionManagement;
 
 /**
  * This class configures the JPA values necesary for spring-jpa and spring-data-jpa.
@@ -20,6 +21,7 @@ import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean;
  */
 @Configuration
 @EnableJpaRepositories(basePackages = {"es.ait.recetario"})
+@EnableTransactionManagement
 public class PersistenceContext
 {
     @Bean

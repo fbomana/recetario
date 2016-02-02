@@ -33,7 +33,7 @@
     </resource-ref>
   
     <welcome-file-list>
-        <welcome-file>/recipe/search</welcome-file>
+        <welcome-file>index.jsp</welcome-file>
     </welcome-file-list>
   
 </web-app>

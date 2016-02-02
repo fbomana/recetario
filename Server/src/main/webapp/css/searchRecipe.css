@@ -1,0 +1,91 @@
+body {
+}
+
+#tags {
+    width:40%;
+}
+
+div#recipes {
+    padding-left:1em;
+}
+
+div.recipe {
+    width:80%;
+    padding:0.9em;
+    color:darkgrey;
+    font-size:1em;
+    border-bottom: 2px dotted lightgrey;
+        
+}
+
+div.recipe a {
+    font-weight: bold;
+    font-size:1.2em;
+}
+
+div.recipe span {
+    float:right;
+}
+
+div.recipe span img {
+    width:1em;
+    height:1em;
+    cursor:pointer;
+    border:0;
+    margin-left:0.6em;
+}
+
+div#recipeDetail {
+    position:absolute;
+    display:none;
+    border:2px solid green;
+    border-radius:25px;
+    overflow: hidden;
+    background-color: #FFFFFF;
+    padding:1em;
+}
+
+div#recipeDetail span.right {
+    float:right;
+}
+
+div#recipeDetail div.recipeDiv {
+    overflow:auto;
+}
+
+div#recipeDetail span.tags {
+    padding-top:0.5em;
+    color:darkgrey;
+}
+
+div#recipeDetail div.recipeDiv a {
+    font-weight: bold;
+    color: darkred;
+    text-decoration: underline;
+    text-decoration-color: red;
+}
+
+div#recipeDetail div.recipeDiv a:hover {
+    font-weight: bolder;
+    text-decoration: underline;
+    text-decoration-color: darkred;
+}
+
+/*
+ * Synchronize screen
+ */
+div#upperDiv {
+    width:80%;
+}
+
+div#upperDiv label {
+    font-weight: bold;
+}
+
+div#upperDiv span {
+    float: right;
+}
+
+input#synchronizeURL {
+    width:70%;
+}
