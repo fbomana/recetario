@@ -53,7 +53,7 @@
         
         function init2( recipe )
         {
-            document.getElementById("title").value = recipe.recipeTitle;
+            document.getElementById("title").value = recipe.title;
             new Vue({
               el: '#editor',
               data: {
@@ -63,12 +63,12 @@
                 marked: marked
               }
             })
-            if ( recipe.tagsList )
+            if ( recipe.tags )
             {
                 var separator = ""
-                for ( var i = 0; i < recipe.tagsList.length; i++ )
+                for ( var i = 0; i < recipe.tags.length; i++ )
                 {
-                    document.getElementById("tags").value += separator + recipe.tagsList[i].tag;
+                    document.getElementById("tags").value += separator + recipe.tags[i];
                     separator = ", ";
                 }
             }

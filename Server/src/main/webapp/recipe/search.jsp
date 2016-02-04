@@ -155,7 +155,7 @@
         
         var enlace = document.createElement("a");
         enlace.href="javascript:showRecipe(" + recipe.id + ");";
-        enlace.appendChild( document.createTextNode( recipe.recipeTitle ) );
+        enlace.appendChild( document.createTextNode( recipe.title ) );
         div.appendChild( enlace );
         
         if ( canEdit )
@@ -182,28 +182,25 @@
         div.appendChild( document.createElement( "br"));
         
         var tagsText = "Tags: ";
-        for ( var i = 0; i < recipe.tagsList.length; i ++ )
+        for ( var i = 0; i < recipe.tags.length; i ++ )
         {
             if ( i !== 0 )
             {
                 tagsText += ", ";
             }
-            tagsText += recipe.tagsList[i].tag;
+            tagsText += recipe.tags[i].tag;
         }
         div.appendChild( document.createTextNode( tagsText ));
         var span = document.createElement("span");
         span.className="right";
-        span.appendChild( document.createTextNode("Update: " + new Date( recipe.recipeUpdate )));
+        span.appendChild( document.createTextNode("Update: " + new Date( recipe.update )));
         div.appendChild( span );
         return div;
     }
     
     function showRecipe( id )
     {       
-        var paramArray = new Array();
-        paramArray[0] = "id";
-        paramArray[1] = "" + id;
-        post( 'recetario/services/recipe', paramArray, function ( ok, xhr ) {
+        post( '/recetario/services/recipe/' + id, null, function ( ok, xhr ) {
             if ( ok ) 
             {
                 printRecipe( JSON.parse( xhr.responseText ));

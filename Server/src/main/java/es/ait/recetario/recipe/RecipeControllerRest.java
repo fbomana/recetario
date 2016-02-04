@@ -14,6 +14,7 @@ import java.util.List;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
@@ -49,7 +50,7 @@ public class RecipeControllerRest
      * @param session
      * @return
      */
-    @RequestMapping( path="/session/load", method = RequestMethod.GET, produces = "application/json" )
+    @RequestMapping( path="/session/load", method = RequestMethod.GET, produces = "application/json;charset=UTF-8" )
     public Recipe load( HttpSession session )
     {
         if ( session.getAttribute("recipeDraft") != null )
@@ -66,10 +67,16 @@ public class RecipeControllerRest
         }
     }
     
-    @RequestMapping( path="/search", method = RequestMethod.POST, produces = "application/json")
+    @RequestMapping( path="/search", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     public List<Recipe> search( HttpServletRequest request )
     {
         List<Tag> tags = Util.String2Tags(request.getParameter("tags"));
         return recipeDAO.searchByTags(tags, !"true".equals( request.getParameter("searchType")) );
+    }
+    
+    @RequestMapping(path="/{recipeId}", produces = "application/json;charset=UTF-8")
+    public Recipe get( @PathVariable String recipeId )
+    {
+        return recipeDAO.find( Integer.parseInt( recipeId ));
     }
 }

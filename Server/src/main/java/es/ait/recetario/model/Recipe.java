@@ -5,6 +5,7 @@
  */
 package es.ait.recetario.model;
 
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import java.io.Serializable;
 import java.io.UnsupportedEncodingException;
 import java.text.SimpleDateFormat;
@@ -46,6 +47,7 @@ import javax.xml.bind.annotation.XmlTransient;
     @NamedQuery(name = "Recipe.findByRecipeOrigin", query = "SELECT r FROM Recipe r WHERE r.recipeOrigin = :recipeOrigin"),
     @NamedQuery(name = "Recipe.findByRecipeShareId", query = "SELECT r FROM Recipe r WHERE r.recipeShareId = :recipeShareId")
 })
+@JsonSerialize( using = RecipeJSONSerializer.class )
 public class Recipe implements Serializable
 {
     private static final long serialVersionUID = 1L;

@@ -30,7 +30,7 @@ public class TagControllerRest
      * @param tags
      * @return
      */
-    @RequestMapping( path = "/search/notin", produces = "application/json")
+    @RequestMapping( path = "/search/notin", produces = "application/json;charset=UTF-8")
     public List<Tag> getTagsNotIn( @Param("tags") String tags )
     {
         return tagDAO.searchNotIn( Util.String2Tags(tags));

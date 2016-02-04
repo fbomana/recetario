@@ -52,6 +52,16 @@ public class RecipeDAO
     }
     
     /**
+     * Returns the recipe with the id passed as parameter.
+     * @param id
+     * @return 
+     */
+    public Recipe find( Integer id )
+    {
+        return (Recipe)em.createNamedQuery("Recipe.findByRecipeId").setParameter("recipeId", id).getSingleResult();
+    }
+    
+    /**
      * Reemoves a recipe from BBDD.
      * @param recipe 
      */
