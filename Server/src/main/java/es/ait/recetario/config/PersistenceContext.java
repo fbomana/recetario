@@ -1,11 +1,11 @@
 package es.ait.recetario.config;
 
-import es.ait.recetario.config.bbdd.BBDDManager;
 import java.util.Properties;
-import javax.naming.InitialContext;
+
 import javax.naming.NamingException;
 import javax.persistence.EntityManagerFactory;
 import javax.sql.DataSource;
+
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.env.Environment;
@@ -13,6 +13,8 @@ import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 import org.springframework.orm.jpa.JpaTransactionManager;
 import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
+
+import es.ait.recetario.config.bbdd.BBDDManager;
 
 /**
  * This class configures the JPA values necesary for spring-jpa and spring-data-jpa.

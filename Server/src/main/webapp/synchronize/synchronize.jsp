@@ -1,0 +1,215 @@
+<%@page contentType="text/html" pageEncoding="UTF-8"%>
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <title>Recetario - synchronize</title>
+    <link rel="stylesheet" href="../css/recetario.css">
+    <link rel="stylesheet" href="../css/searchRecipe.css">
+    <script src="../js/recetario.js"></script>
+</head>
+<body>
+<jsp:include page="../menu"/>
+<div id="content">
+<section>
+    <h1>Synchronization source</h1>
+    <form method="post" action="synchronize" name="fsynchronize" id="fsynchronize">
+        <input type="url" id="synchronizeURL" name="synchronizeURL" value=""><input type="button" id="synchronyzeButton" value="synchronize" onclick="getExternalRecipes();">
+        <input type="hidden" name="post" value="/recipes/SynchronizeRecipes"/>
+        <input type="hidden" id="importList" name="importList" value="">
+    </form>
+</section>
+<section>
+    <h1>Importable recipes</h1>
+    <div id="upperDiv">
+        <label for="checkAll"><input type="checkbox" id="checkAll" onchange="checkAll()" required> Check/Unchek all</label>
+        <span><input type="button" id="import" value="import" onClick="importRecipes();" form="fsynchronize"></span>
+    </div>
+    <div id="recipes">
+        
+    </div>
+</section>
+</div>
+<div id="recipeDetail"></div>
+</div>
+<script>
+    function getExternalRecipes()
+    {
+        if ( document.getElementById("synchronizeURL").checkValidity() )
+        {
+            var params = new Array(0);
+            params[0] = "url";
+            params[1] = document.getElementById("synchronizeURL").value;
+            post( "../services/sync/external", params, function( ok, xhr ) {
+                if ( ok )
+                {
+                    var recipes = JSON.parse( xhr.responseText );
+                    var recipesDiv = ClearOptionsFast("recipes");
+                    for ( var i = 0; i < recipes.length; i ++ )
+                    {
+                        recipesDiv.appendChild( printRecipeListItem( recipes[i]) );
+                    }
+                }
+            })
+        }
+    }
+    
+    function printRecipeListItem( recipe )
+    {
+        var div = document.createElement("div");
+        div.className="recipe";
+        
+        var checkbox = document.createElement("input");
+        checkbox.id= recipe.shareId;
+        checkbox.type="checkbox";
+        checkbox.checked = false;
+        checkbox.onchange = function() {
+            if ( !this.checked )
+            {
+                document.getElementById("checkAll").checked = false;
+            }
+        }
+        
+        div.appendChild( checkbox );
+        
+        
+        var enlace = document.createElement("a");
+        enlace.href="javascript:showRecipe(" + recipe.id + ");";
+        enlace.appendChild( document.createTextNode( recipe.title ) );
+        div.appendChild( enlace );   
+        
+        div.appendChild( document.createElement( "br"));
+        
+        var tagsText = "Tags: ";
+        for ( var i = 0; i < recipe.tags.length; i ++ )
+        {
+            if ( i !== 0 )
+            {
+                tagsText += ", ";
+            }
+            tagsText += recipe.tags[i];
+        }
+        div.appendChild( document.createTextNode( tagsText ));
+        var span = document.createElement("span");
+        span.className="right";
+        span.appendChild( document.createTextNode("Update: " + recipe.update ));
+        div.appendChild( span );
+        return div;
+    }
+    
+    function showRecipe( id )
+    {       
+        var paramArray = new Array();
+        paramArray[0] = "id";
+        paramArray[1] = "" + id;
+        paramArray[2] = "url";
+        paramArray[3] = document.getElementById("synchronizeURL").value;
+        post( '../services/sync/', paramArray, function ( ok, xhr ) {
+            if ( ok ) 
+            {
+                printRecipe( JSON.parse( xhr.responseText ));
+            } 
+            else 
+            {
+                alert('Error: ' + xhr.status);
+            }
+        });
+    }
+    
+    function printRecipe( recipe )
+    {
+        var div = ClearOptionsFast("recipeDetail");
+        div.style.display="none";
+        
+        // Dimensions
+        var divWidth = Math.max( 500, recetario_x / 2 );
+        var divHeight = Math.max( 400, recetario_y / 2 );
+        div.style.top = ( recetario_y - divHeight ) / 2 + "px";
+        div.style.left =  ( recetario_x - divWidth )/ 2 + "px";
+        div.style.width = divWidth + "px";
+        div.style.height = divHeight + "px";
+        
+        var span = document.createElement("span");
+        span.className="right";
+        span.appendChild( document.createTextNode("X"));
+        span.onclick = closeRecipe;
+        span.style.cursor = "pointer";
+        div.appendChild( span );
+        
+        var h1 = document.createElement("h1");
+        h1.appendChild( document.createTextNode( recipe.title ));
+        div.appendChild( h1 );
+        
+        var recipeDiv = document.createElement("div");
+        recipeDiv.style.width = "calc(" + divWidth + "px - 1em)";
+        recipeDiv.style.height = "calc(" + divHeight + "px - 4em - 50px)";
+        recipeDiv.className = "recipeDiv";
+        recipeDiv.innerHTML = marked( recipe.recipe );
+        div.appendChild( recipeDiv );
+        
+        var tagsSpan = document.createElement("span");
+        tagsSpan.className="tags";
+        
+        var tagsText = "Tags: "; 
+        for ( var i = 0; i < recipe.tags.length; i ++ )
+        {
+            if ( i > 0 )
+            {
+                tagsText += ", ";
+            }
+            tagsText += recipe.tags[i];
+        }
+        tagsSpan.appendChild(document.createTextNode( tagsText ));
+        div.appendChild( tagsSpan );
+        
+        
+        div.style.display="block";
+    }
+    
+    function closeRecipe()
+    {
+        var div = ClearOptionsFast("recipeDetail");
+        div.style.display = "none";
+    }
+    
+    function checkAll()
+    {
+        var checks = document.getElementsByTagName("input");
+        var checkStatus = document.getElementById("checkAll").checked;
+        for ( var i = 0; i < checks.length; i ++ )
+        {
+            if ( checks[i].type == "checkbox" && checks[i].id != "checkAll")
+            {
+                checks[i].checked = checkStatus;
+            }
+        }
+    }
+    
+    function importRecipes()
+    {
+        var importList = "";
+        var checks = document.getElementsByTagName("input");
+        for ( var i = 0; i < checks.length; i ++ )
+        {
+            if ( checks[i].type === "checkbox" && checks[i].id !== "checkAll" && checks[i].checked )
+            {
+                if ( importList !== "" )
+                {
+                    importList += ",";
+                }
+                importList += checks[i].id;
+            }
+        }
+        if ( importList !== "" )
+        {
+            document.getElementById("importList").value = importList;
+            document.getElementById("fsynchronize").submit();
+        }
+        else
+        {
+            alert("No recipes to import");
+        }
+    }
+</script>
+</body>
+</html>

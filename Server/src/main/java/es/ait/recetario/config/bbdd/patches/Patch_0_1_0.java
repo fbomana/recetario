@@ -4,16 +4,17 @@
  * and open the template in the editor.
  */
 package es.ait.recetario.config.bbdd.patches;
-
-import es.ait.recetario.desktop.commands.BBDD.BBDDPatch;
+		
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 
+import es.ait.recetario.config.bbdd.BBDDPatch;
+
 /**
  * First patch. Creates all the basic tables.
  * 
- * @author aitkiar
+ * @author aitkiar		
  */
 public class Patch_0_1_0 implements BBDDPatch
 {

@@ -188,7 +188,7 @@
             {
                 tagsText += ", ";
             }
-            tagsText += recipe.tags[i].tag;
+            tagsText += recipe.tags[i];
         }
         div.appendChild( document.createTextNode( tagsText ));
         var span = document.createElement("span");

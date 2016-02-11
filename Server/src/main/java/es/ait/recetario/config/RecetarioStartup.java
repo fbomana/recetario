@@ -1,8 +1,9 @@
 package es.ait.recetario.config;
 
-import es.ait.recetario.config.bbdd.BBDDManager;
 import javax.servlet.ServletContext;
 import javax.servlet.http.HttpServlet;
+
+import es.ait.recetario.config.bbdd.BBDDManager;
 
 /**
  * This servlets initialilze the preferences object with the context configured

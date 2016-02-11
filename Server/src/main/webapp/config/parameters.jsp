@@ -5,7 +5,7 @@
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
     <title>Recetario- configuration</title>
     <link rel="stylesheet" href="../css/recetario.css">
-    <link rel="stylesheet" href="../css/config.css"
+    <link rel="stylesheet" href="../css/config.css">
 </head>
 <body>
 <jsp:include page="../menu"/>

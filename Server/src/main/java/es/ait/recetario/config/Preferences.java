@@ -5,12 +5,14 @@
  */
 package es.ait.recetario.config;
 
-import es.ait.recetario.config.bbdd.BBDDManager;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+
 import javax.naming.NamingException;
+
+import es.ait.recetario.config.bbdd.BBDDManager;
 
 /**
  * this class keeps the recetario configuration in memory.
@@ -61,6 +63,7 @@ public class Preferences
         }
         catch ( NamingException e )
         {
+        	e.printStackTrace();
             throw new SQLException( e );
         }
     }
