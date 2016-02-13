@@ -70,7 +70,7 @@
             paramArray[3] = "1";
         }
         
-        post( '/recetario/services/tag/search/notin', paramArray, function ( ok, xhr ) {
+        post( '../services/tag/search/notin', paramArray, function ( ok, xhr ) {
             if ( ok ) 
             {
                 var tags = JSON.parse( xhr.responseText );
@@ -108,7 +108,7 @@
             paramArray[3] = document.getElementById( "searchType" ).checked ? "true" : false;
         }
         
-        post( '/recetario/services/recipe/search', paramArray, function ( ok, xhr ) {
+        post( '../services/recipe/search', paramArray, function ( ok, xhr ) {
             if ( ok ) 
             {
                 printRecipeList( JSON.parse( xhr.responseText ));
@@ -164,7 +164,7 @@
             icons.className="right";
 
             var editIconLink = document.createElement("a");
-            editIconLink.href= "/recipes/EditRecipe?id=" + recipe.id
+            editIconLink.href= "edit?id=" + recipe.id
             var editIcon = document.createElement("img");
             editIcon.src="../img/edit.png"
             editIconLink.appendChild( editIcon );
@@ -188,7 +188,7 @@
             {
                 tagsText += ", ";
             }
-            tagsText += recipe.tags[i].tag;
+            tagsText += recipe.tags[i];
         }
         div.appendChild( document.createTextNode( tagsText ));
         var span = document.createElement("span");
@@ -200,7 +200,7 @@
     
     function showRecipe( id )
     {       
-        post( '/recetario/services/recipe/' + id, null, function ( ok, xhr ) {
+        post( '../services/recipe/' + id, null, function ( ok, xhr ) {
             if ( ok ) 
             {
                 printRecipe( JSON.parse( xhr.responseText ));
@@ -272,7 +272,7 @@
     {
         if ( confirm("Deleted recipes can't be recovered. Are you sure ?") )
         {
-            window.location.href="/recipes/DeleteRecipe?id=" + id ;
+            window.location.href="delete/" + id ;
         }
     }
 </script>

@@ -42,6 +42,13 @@ public class RecipeControllerRest
         recipe.setRecipeTitle( request.getParameter("title") );
         recipe.setRecipe( request.getParameter("recipe") );
         recipe.setTagsList( Util.String2Tags(request.getParameter("tags")));
+        try
+        {
+            recipe.setRecipeId( Integer.parseInt( request.getParameter("id")));
+        }
+        catch ( Exception e )
+        {
+        }
         session.setAttribute("recipeDraft", recipe );
     }
     

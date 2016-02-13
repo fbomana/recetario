@@ -46,7 +46,20 @@
             get("/recetario/services/recipe/session/load", null, function( status, xhr ) {
                 if ( status )
                 {
-                    init2( JSON.parse( xhr.responseText ));
+                    var recipe = JSON.parse( xhr.responseText );
+                    if ( document.getElementById("id").value == "" || document.getElementById("id").value == recipe.id )
+                    {
+                        init2( recipe );
+                    }
+                    else
+                    {
+                         get("/recetario/services/recipe/" + document.getElementById("id").value, null, function( status, xhr ) {
+                             if ( status )
+                             {
+                                 init2( JSON.parse( xhr.responseText ));
+                             }
+                         }, false );
+                    }
                 }
             }, false);
         }
@@ -97,7 +110,9 @@
             parameters[3] = document.getElementById("tags").value;            
             parameters[4] = "title";
             parameters[5] = document.getElementById("title").value;
-            post( "/recetario/services/recipe/session/save", parameters, function ( status, xhr ) {
+            parameters[6] = "id";
+            parameters[7] = document.getElementById("id").value;
+            post( "../services/recipe/session/save", parameters, function ( status, xhr ) {
                 if ( !status )
                 {
                     alert( "Error saving draft:" + xhr.status );
