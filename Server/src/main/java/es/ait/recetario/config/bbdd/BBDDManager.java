@@ -5,13 +5,14 @@
  */
 package es.ait.recetario.config.bbdd;
 
-import es.ait.recetario.desktop.commands.BBDD.BBDDPatch;
+		
 import java.sql.Connection;
 import java.sql.DatabaseMetaData;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.regex.Pattern;
+
 import javax.naming.Context;
 import javax.naming.InitialContext;
 import javax.naming.NamingException;
@@ -22,12 +23,12 @@ import javax.sql.DataSource;
  * Controls the BBDD lifecycle.
  * 
  * @author aitkiar
- */
+ */	
 public class BBDDManager
 {
     private static BBDDManager instance;
     private DataSource datasource;
-    private static final String[] versions = {"0.1.0", "0.2.0"};
+    private static final String[] versions = {"0.1.0", "0.2.0", "0.4.0"};
     
     private BBDDManager( )
     {

@@ -5,13 +5,13 @@
  */
 package es.ait.recetario.model;
 
-import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import java.io.Serializable;
 import java.io.UnsupportedEncodingException;
 import java.text.SimpleDateFormat;
 import java.util.Base64;
 import java.util.Date;
 import java.util.List;
+
 import javax.persistence.Basic;
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -29,6 +29,9 @@ import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlTransient;
+
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 
 /**
  *
@@ -48,6 +51,7 @@ import javax.xml.bind.annotation.XmlTransient;
     @NamedQuery(name = "Recipe.findByRecipeShareId", query = "SELECT r FROM Recipe r WHERE r.recipeShareId = :recipeShareId")
 })
 @JsonSerialize( using = RecipeJSONSerializer.class )
+@JsonDeserialize( using = RecipeJSONDeserializer.class )
 public class Recipe implements Serializable
 {
     private static final long serialVersionUID = 1L;

@@ -5,9 +5,10 @@
  */
 package es.ait.recetario;
 
-import es.ait.recetario.model.Tag;
 import java.util.ArrayList;
 import java.util.List;
+
+import es.ait.recetario.model.Tag;
 
 
 /**

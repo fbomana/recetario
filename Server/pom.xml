@@ -9,7 +9,7 @@
     <name>Recetario server version</name>
 
     <properties>
-        <tomcat-folder>/home/aitkiar/Documentos/spring/tomcat/webapps</tomcat-folder>
+        <tomcat-folder>/home/aitkiar/Documentos/tomcat/webapps</tomcat-folder>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <maven.compiler.source>1.8</maven.compiler.source>
         <maven.compiler.target>1.8</maven.compiler.target>
@@ -85,12 +85,11 @@
             <artifactId>jackson-datatype-json-org</artifactId>
             <version>2.0.0</version>
         </dependency>
-        <dependency>
-            <groupId>mysql</groupId>
-            <artifactId>mysql-connector-java</artifactId>
-            <version>5.1.38</version>
-            <scope>test</scope>
-        </dependency>
+		<dependency>
+		    <groupId>org.mariadb.jdbc</groupId>
+		    <artifactId>mariadb-java-client</artifactId>
+		    <version>1.3.4</version>
+		</dependency>
         <dependency>
             <groupId>org.slf4j</groupId>
             <artifactId>slf4j-simple</artifactId>

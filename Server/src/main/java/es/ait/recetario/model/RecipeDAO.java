@@ -6,7 +6,9 @@
 package es.ait.recetario.model;
 
 import java.util.List;
+
 import javax.persistence.EntityManager;
+import javax.persistence.NoResultException;
 import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
 
@@ -78,7 +80,8 @@ public class RecipeDAO
      *  search for recipes that have some of the tags.
      * @return 
      */
-    public List<Recipe> searchByTags( List<Tag> tags, boolean allTags )
+    @SuppressWarnings("unchecked")
+	public List<Recipe> searchByTags( List<Tag> tags, boolean allTags )
     {
         String sql = "select r.* from recipe r";
         
@@ -115,6 +118,32 @@ public class RecipeDAO
             query = query.setParameter( i, tags.size());
         }
         return query.getResultList();
+    }
+    
+    /**
+     * Imports a recipe from an external source into the BBDD 
+     * @param recipe
+     */
+    public void importRecipe( Recipe recipe )
+    {
+    	Recipe aux = null;
+    	
+    	try
+    	{
+    		aux = ( Recipe )em.createNamedQuery("Recipe.findByRecipeShareId").setParameter("recipeShareId", recipe.getRecipeShareId()).getSingleResult();
+    		aux.setRecipeTitle( recipe.getRecipeTitle());
+    		aux.setRecipe( recipe.getRecipeTitle());
+    		aux.setRecipeOrigin( recipe.getRecipeOrigin());
+    		aux.setRecipeDate( recipe.getRecipeDate());
+    		aux.setRecipeUpdate( recipe.getRecipeUpdate());
+    		aux.setTagsList( recipe.getTagsList());
+    	}
+    	catch ( NoResultException  e )
+    	{
+    		aux = recipe;
+    		aux.setRecipeId( null );
+    	}
+    	save( aux );
     }
 
 }

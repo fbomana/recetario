@@ -3,7 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package es.ait.recetario.desktop.commands.BBDD;
+package es.ait.recetario.config.bbdd;
 
 import java.sql.Connection;
 import java.sql.SQLException;

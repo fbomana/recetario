@@ -5,8 +5,6 @@
  */
 package es.ait.recetario.config.bbdd.patches;
 
-import es.ait.recetario.config.Preferences;
-import es.ait.recetario.desktop.commands.BBDD.BBDDPatch;
 import java.io.UnsupportedEncodingException;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -14,6 +12,9 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.text.SimpleDateFormat;
 import java.util.Base64;
+
+import es.ait.recetario.config.Preferences;
+import es.ait.recetario.config.bbdd.BBDDPatch;
 
 /**
  *

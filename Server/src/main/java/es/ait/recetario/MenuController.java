@@ -6,6 +6,7 @@
 package es.ait.recetario;
 
 import javax.servlet.http.HttpServletRequest;
+
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -31,7 +32,7 @@ public class MenuController
             case "/recetario/recipe/new.jsp":
                 model.addAttribute("newClass", " class='menuSelected'");
                 break;
-            case "/recipe/synchronize":
+            case "/recetario/synchronize/synchronize.jsp":
                 model.addAttribute("synchronizeClass", " class='menuSelected'");
                 break;
             case "/recetario/config/parameters.jsp":
