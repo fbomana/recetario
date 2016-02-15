@@ -13,11 +13,11 @@ import es.ait.recetario.config.bbdd.BBDDPatch;
 
 /**
  * First patch. Creates all the basic tables.
- * 
- * @author aitkiar		
+ * 	
  */
 public class Patch_0_1_0 implements BBDDPatch
 {
+	private final String version = "0.1.0";
 
     /**
      * Creates the tables:
@@ -92,8 +92,9 @@ public class Patch_0_1_0 implements BBDDPatch
             ps.executeUpdate();
         }
         
-        try ( PreparedStatement ps = connection.prepareStatement("insert into preferences ( app_version, name, autosave_interval ) values ( '0.1.0', 'default', 30000 )"))
+        try ( PreparedStatement ps = connection.prepareStatement("insert into preferences ( app_version, name, autosave_interval ) values ( ?, 'default', 30000 )"))
         {
+        	ps.setString( 1, version );
             ps.executeUpdate();
         }
     }
@@ -101,7 +102,7 @@ public class Patch_0_1_0 implements BBDDPatch
     @Override
     public String forVersion()
     {
-        return "0.1.0";
+        return version;
     }
     
 }

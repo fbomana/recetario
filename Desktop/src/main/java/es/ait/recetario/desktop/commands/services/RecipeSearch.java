@@ -7,6 +7,7 @@ package es.ait.recetario.desktop.commands.services;
 
 import es.ait.recetario.desktop.Utils;
 import es.ait.recetario.desktop.commands.BBDD.BBDDManager;
+import es.ait.recetario.desktop.commands.CommandPath;
 import es.ait.recetario.desktop.commands.JSONServiceCommand;
 import es.ait.recetario.desktop.model.Recipe;
 import es.ait.recetario.desktop.model.RecipeDAO;
@@ -24,6 +25,7 @@ import javax.servlet.http.HttpServletResponse;
  *
  * @author aitkiar
  */
+@CommandPath(path="/services/recipe/search")
 public class RecipeSearch extends JSONServiceCommand
 {
 

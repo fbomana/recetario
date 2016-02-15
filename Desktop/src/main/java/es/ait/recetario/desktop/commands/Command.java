@@ -47,7 +47,7 @@ public abstract class Command
     protected void forward ( String resource, HttpServletRequest request, HttpServletResponse response, PrintWriter out ) throws ClassNotFoundException,
             InstantiationException, IllegalAccessException, IOException, ServletException
     {
-        CommandFactory.getCommand( resource ).handle( request, response, out );
+        CommandFactory.getInstance().getCommand( resource ).handle( request, response, out );
     }
     
     public abstract void processRequest( HttpServletRequest request, HttpServletResponse response, PrintWriter out ) throws IOException, ServletException;

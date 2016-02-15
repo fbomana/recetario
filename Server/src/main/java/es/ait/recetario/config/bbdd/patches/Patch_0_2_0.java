@@ -22,7 +22,8 @@ import es.ait.recetario.config.bbdd.BBDDPatch;
  */
 public class Patch_0_2_0 implements BBDDPatch
 {
-
+	private final String version = "0.2.0";
+	
     @Override
     public void run(Connection connection) throws SQLException
     {
@@ -91,8 +92,9 @@ public class Patch_0_2_0 implements BBDDPatch
 //            ps.executeUpdate();
 //        }
         
-        try ( PreparedStatement ps = connection.prepareStatement(" update preferences set app_version = '0.2.0'"))
+        try ( PreparedStatement ps = connection.prepareStatement(" update preferences set app_version = ?"))
         {
+        	ps.setString( 1, version );
             ps.executeUpdate();
         }
     }
@@ -100,7 +102,7 @@ public class Patch_0_2_0 implements BBDDPatch
     @Override
     public String forVersion()
     {
-        return "0.2.0";
+        return version;
     }
     
 }

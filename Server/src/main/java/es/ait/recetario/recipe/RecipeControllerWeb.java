@@ -88,7 +88,7 @@ public class RecipeControllerWeb
         
         recipeDao.remove( recipe );
         
-        model.addAttribute("url", "search");
+        model.addAttribute("url", "../search");
         return "/redirect.jsp";
     }
     

@@ -7,6 +7,7 @@
     <link rel="stylesheet" href="../css/recetario.css">
     <link rel="stylesheet" href="../css/searchRecipe.css">
     <script src="../js/recetario.js"></script>
+    <script src="../js/marked.min.js"></script>
 </head>
 <body>
 <jsp:include page="../menu"/>
@@ -40,7 +41,7 @@
             var params = new Array(0);
             params[0] = "url";
             params[1] = document.getElementById("synchronizeURL").value;
-            post( "../services/sync/external", params, function( ok, xhr ) {
+            post( "../services/sync/external/search", params, function( ok, xhr ) {
                 if ( ok )
                 {
                     var recipes = JSON.parse( xhr.responseText );
@@ -104,7 +105,7 @@
         paramArray[1] = "" + id;
         paramArray[2] = "url";
         paramArray[3] = document.getElementById("synchronizeURL").value;
-        post( '../services/sync/', paramArray, function ( ok, xhr ) {
+        post( '../services/sync/external/recipe', paramArray, function ( ok, xhr ) {
             if ( ok ) 
             {
                 printRecipe( JSON.parse( xhr.responseText ));

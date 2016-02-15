@@ -20,3 +20,14 @@ Desktop/target
 # Run Byproducts
 Desktop/derby.log
 /Server/target/
+
+#Eclipse
+Server/.classpath
+Server/.settings/*
+Server/.factorypath
+Server/.apt_generated
+Server/.project
+Desktop/.classpath
+Desktop/.project
+Desktop/.settings/
+

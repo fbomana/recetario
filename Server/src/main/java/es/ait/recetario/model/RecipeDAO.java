@@ -5,6 +5,7 @@
  */
 package es.ait.recetario.model;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.persistence.EntityManager;
@@ -118,6 +119,37 @@ public class RecipeDAO
             query = query.setParameter( i, tags.size());
         }
         return query.getResultList();
+    }
+    
+    /**
+     * Searchs for all the recipes with the selected shareIds.
+     * @param shareIds An array containing the id's to search. If it's null or empty it returns an empty list
+     * @return
+     */
+    @SuppressWarnings("unchecked")
+	public List<Recipe> searchByShareId( String[] shareIds ) 
+    {
+    	if ( shareIds == null || shareIds.length == 0 )
+    	{
+    		return new ArrayList<Recipe>();
+    	}
+    	
+    	String sql = "select r.* from Recipe r where r.shareId in ( ";
+    	String separador = "";
+    	for ( int i = 0; i < shareIds.length; i++  )
+    	{
+    		sql += separador + "?";
+    		separador = ", ";
+    	}
+    	sql += " ) order by recipe_update desc";
+    	
+    	Query query = em.createQuery( sql );
+    	for ( int i = 0; i < shareIds.length; i++  )
+    	{
+    		query = query.setParameter( i+1, shareIds[i]);
+    	}
+    	return query.getResultList();
+    	
     }
     
     /**

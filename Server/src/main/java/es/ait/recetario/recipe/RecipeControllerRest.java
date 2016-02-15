@@ -15,6 +15,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import es.ait.recetario.Util;
@@ -77,16 +78,38 @@ public class RecipeControllerRest
         }
     }
     
+    /**
+     * Searchs the BBDD for recipes.
+     * If the parameter importList exists, returns the recipes that have the shareIds included in the import list.
+     * If that parameter it's not set, then the search can be personalize using the parameter tags and searchType.
+     * 
+     * @param request
+     * @return
+     */
     @RequestMapping( path="/search", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     public List<Recipe> search( HttpServletRequest request )
     {
-        List<Tag> tags = Util.String2Tags(request.getParameter("tags"));
-        return recipeDAO.searchByTags(tags, !"true".equals( request.getParameter("searchType")) );
+    	if ( request.getParameter("importList") != null )
+    	{
+    		String[] shareIds = request.getParameter("importList").split(",");
+    		return recipeDAO.searchByShareId( shareIds );
+    	}
+    	else
+    	{
+	        List<Tag> tags = Util.String2Tags(request.getParameter("tags"));
+	        return recipeDAO.searchByTags(tags, !"true".equals( request.getParameter("searchType")) );
+    	}
     }
     
     @RequestMapping(path="/{recipeId}", produces = "application/json;charset=UTF-8")
     public Recipe get( @PathVariable String recipeId )
     {
         return recipeDAO.find( Integer.parseInt( recipeId ));
+    }
+    
+    @RequestMapping(method=RequestMethod.GET, produces = "application/json;charset=UTF-8")
+    public Recipe get( @RequestParam(name="id") Integer id )
+    {
+        return recipeDAO.find( id );
     }
 }

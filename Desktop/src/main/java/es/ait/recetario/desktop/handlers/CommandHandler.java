@@ -31,7 +31,7 @@ public class CommandHandler implements BaseHandler
         try
         {
             out = response.getWriter();
-            command = CommandFactory.getCommand( resource );
+            command = CommandFactory.getInstance().getCommand( resource );
             command.handle( request, response, out );
         }
         catch ( Exception e )
@@ -49,7 +49,7 @@ public class CommandHandler implements BaseHandler
     {
         try
         {
-            return CommandFactory.getCommand( resource ).getContentType(resource);
+            return CommandFactory.getInstance().getCommand( resource ).getContentType(resource);
         }
         catch ( Exception e )
         {
