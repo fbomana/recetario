@@ -19,6 +19,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import es.ait.recetario.Util;
+import es.ait.recetario.model.PagedResult;
 import es.ait.recetario.model.Recipe;
 import es.ait.recetario.model.RecipeDAO;
 import es.ait.recetario.model.Tag;
@@ -27,7 +28,7 @@ import es.ait.recetario.model.Tag;
  * Controller class for rest services that works with recipes.
  */
 @RestController
-@RequestMapping("/services/recipe/")
+@RequestMapping("/services/recipe")
 public class RecipeControllerRest
 {
     @Autowired
@@ -87,17 +88,24 @@ public class RecipeControllerRest
      * @return
      */
     @RequestMapping( path="/search", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
-    public List<Recipe> search( HttpServletRequest request )
+    public PagedResult<Recipe> search( HttpServletRequest request )
     {
     	if ( request.getParameter("importList") != null )
     	{
-    		String[] shareIds = request.getParameter("importList").split(",");
-    		return recipeDAO.searchByShareId( shareIds );
+            String[] shareIds = request.getParameter("importList").split(",");
+            return recipeDAO.searchByShareId( shareIds );
     	}
     	else
     	{
-	        List<Tag> tags = Util.String2Tags(request.getParameter("tags"));
-	        return recipeDAO.searchByTags(tags, !"true".equals( request.getParameter("searchType")) );
+            List<Tag> tags = Util.String2Tags(request.getParameter("tags"));
+            if ( request.getParameter("page") != null && request.getParameter("pageSize") != null )
+            {
+                return recipeDAO.searchByTags(tags, !"true".equals( request.getParameter("searchType")), new Integer( request.getParameter("page")), new Integer( request.getParameter("pageSize")) );
+            }
+            else
+            {
+                return recipeDAO.searchByTags(tags, !"true".equals( request.getParameter("searchType")), null, null );
+            }
     	}
     }
     

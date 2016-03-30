@@ -99,7 +99,12 @@ public class RecipeDAOTest extends TestCase
             assertFalse( recipeDao.searchByTags( secondTagList, true ).isEmpty());
             assertFalse( recipeDao.searchByTags( secondTagList, false ).isEmpty());
             
-            recipe = recipeDao.searchByTags( secondTagList, true ).get( 0 );
+            List<Recipe> auxList = recipeDao.searchByTags( secondTagList, true );
+            for ( int i = 0; i < auxList.size(); i ++ )
+            {
+                System.out.println( auxList.get( i ).getClass().getName());
+            }
+            recipe = (Recipe)auxList.get( 0 );
             assertTrue( recipe.getTagsList().size() == 2 );
 
             for ( Tag aux : recipe.getTagsList())
@@ -127,6 +132,23 @@ public class RecipeDAOTest extends TestCase
                 ts.rollback();
             }
         }
+    }
+    
+    public void testPagination()
+    {
+        RecipeDAO recipeDao = new RecipeDAO();
+        recipeDao.em = this.em;
+        
+        int page = 1;
+        int pageSize = 5;
+        
+        PagedResult result = recipeDao.searchByTags(null, false, page, pageSize );
+        while ( page < result.getNumPages() )
+        {
+            System.out.println( "Page: " + page + " results: " + result.getResult().size());
+            result = recipeDao.searchByTags(null, false, ++page, pageSize );
+        }
+        System.out.println( "Page: " + page + " results: " + result.getResult().size());
     }
     
 }

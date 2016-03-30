@@ -7,10 +7,11 @@ body {
 
 div#recipes {
     padding-left:1em;
+    overflow-y: auto;
 }
 
 div.recipe {
-    width:80%;
+    width:95%;
     padding:0.9em;
     color:darkgrey;
     font-size:1em;

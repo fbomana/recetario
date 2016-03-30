@@ -46,9 +46,9 @@
                 {
                     var recipes = JSON.parse( xhr.responseText );
                     var recipesDiv = ClearOptionsFast("recipes");
-                    for ( var i = 0; i < recipes.length; i ++ )
+                    for ( var i = 0; i < recipes.result.length; i ++ )
                     {
-                        recipesDiv.appendChild( printRecipeListItem( recipes[i]) );
+                        recipesDiv.appendChild( printRecipeListItem( recipes.result[i]) );
                     }
                 }
             })
@@ -75,7 +75,7 @@
         
         
         var enlace = document.createElement("a");
-        enlace.href="javascript:showRecipe(" + recipe.id + ");";
+        enlace.href="javascript:showRecipe('" + recipe.id + "');";
         enlace.appendChild( document.createTextNode( recipe.title ) );
         div.appendChild( enlace );   
         

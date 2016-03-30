@@ -8,10 +8,7 @@ package es.ait.recetario.model;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.persistence.EntityManager;
 import javax.persistence.NoResultException;
-import javax.persistence.PersistenceContext;
-import javax.persistence.Query;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
@@ -23,11 +20,8 @@ import org.springframework.transaction.annotation.Transactional;
  */
 @Repository
 @Transactional
-public class RecipeDAO
-{
-    @PersistenceContext(unitName = "recetarioPU")
-    protected EntityManager em;
-    
+public class RecipeDAO extends AbstractDAO<Recipe>
+{   
     @Autowired
     protected TagDAO tagDAO;
     
@@ -61,7 +55,7 @@ public class RecipeDAO
      */
     public Recipe find( Integer id )
     {
-        return (Recipe)em.createNamedQuery("Recipe.findByRecipeId").setParameter("recipeId", id).getSingleResult();
+        return em.find(Recipe.class, id);
     }
     
     /**
@@ -81,10 +75,16 @@ public class RecipeDAO
      *  search for recipes that have some of the tags.
      * @return 
      */
-    @SuppressWarnings("unchecked")
-	public List<Recipe> searchByTags( List<Tag> tags, boolean allTags )
+    public List<Recipe> searchByTags( List<Tag> tags, boolean allTags )
     {
-        String sql = "select r.* from recipe r";
+        return (List<Recipe>)searchByTags( tags, allTags, null, null ).getResult();
+    }
+    
+    @SuppressWarnings("unchecked")
+    public PagedResult<Recipe> searchByTags( List<Tag> tags, boolean allTags, Integer page, Integer pageSize )
+    {
+        String sql = "from recipe r";
+        List<Object> params = new ArrayList<Object>();
         
         if ( tags != null && !tags.isEmpty())
         {
@@ -106,19 +106,21 @@ public class RecipeDAO
                 sql += " where recipe_id in ( select distinct( recipe_id ) from recipe_tags where tag in " + inClause +" )";
             }
         }
-        sql += " order by r.recipe_update";
-        
-        Query query = em.createNativeQuery(sql, Recipe.class );
-        int i = 1;
-        for ( Tag tag : tags )
+        sql += " order by r.recipe_update desc";
+
+        if ( tags != null && !tags.isEmpty())
         {
-            query = query.setParameter( i++, tag.getTag() );
+            for ( Tag tag : tags )
+            {
+                params.add( tag.getTag());
+            }
+            if ( allTags )
+            {
+                params.add( tags.size());
+            }
         }
-        if ( tags != null && !tags.isEmpty() && allTags )
-        {
-            query = query.setParameter( i, tags.size());
-        }
-        return query.getResultList();
+
+        return super.getPagedResult( "select r.* " + sql, "select count(*) " + sql, params, page, pageSize, true );
     }
     
     /**
@@ -127,14 +129,9 @@ public class RecipeDAO
      * @return
      */
     @SuppressWarnings("unchecked")
-	public List<Recipe> searchByShareId( String[] shareIds ) 
-    {
-    	if ( shareIds == null || shareIds.length == 0 )
-    	{
-    		return new ArrayList<Recipe>();
-    	}
-    	
-    	String sql = "select r.* from Recipe r where r.shareId in ( ";
+	public PagedResult<Recipe> searchByShareId( String[] shareIds ) 
+    {   	
+    	String sql = " from Recipe r where r.shareId in ( ";
     	String separador = "";
     	for ( int i = 0; i < shareIds.length; i++  )
     	{
@@ -143,12 +140,13 @@ public class RecipeDAO
     	}
     	sql += " ) order by recipe_update desc";
     	
-    	Query query = em.createQuery( sql );
+    	List params = new ArrayList();
+
     	for ( int i = 0; i < shareIds.length; i++  )
     	{
-    		query = query.setParameter( i+1, shareIds[i]);
+            params.add( shareIds[i]);
     	}
-    	return query.getResultList();
+    	return getPagedResult("select r.*" + sql, "select count(*) " + sql, params, 1, null, false);
     	
     }
     
@@ -158,13 +156,13 @@ public class RecipeDAO
      */
     public void importRecipe( Recipe recipe )
     {
-    	Recipe aux = null;
+    	Recipe aux;
     	
     	try
     	{
     		aux = ( Recipe )em.createNamedQuery("Recipe.findByRecipeShareId").setParameter("recipeShareId", recipe.getRecipeShareId()).getSingleResult();
     		aux.setRecipeTitle( recipe.getRecipeTitle());
-    		aux.setRecipe( recipe.getRecipeTitle());
+    		aux.setRecipe( recipe.getRecipe() );
     		aux.setRecipeOrigin( recipe.getRecipeOrigin());
     		aux.setRecipeDate( recipe.getRecipeDate());
     		aux.setRecipeUpdate( recipe.getRecipeUpdate());

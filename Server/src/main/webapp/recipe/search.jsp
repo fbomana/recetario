@@ -13,12 +13,12 @@
     <jsp:include page="../menu"/>
     <div id="content">
     <section>
-    <form method="post" action="/recipes/SearchRecipes" onsubmit="searchRecipes();return false;">
+    <form method="post" action="/recipes/SearchRecipes" onsubmit="lastPage = 0;searchRecipes();return false;">
         <label for="tags">Tags:
             <input type="text" value="" id="tags" name="tags" pattern="(?:[a-zA-Z0-9\-_]+(?:\s*,\s*[a-zA-Z0-9\-_]+)*)" onchange="checkEmpty( this );" />
         </label>
         <select id="availableTags" onChange="addTag();"></select>
-        <input type="button" value="search" onclick="searchRecipes();"><br>
+        <input type="button" value="search" onclick="lastPage = 0;searchRecipes();"><br>
         <label for="searchType">All tags<input id="searchType" name="searchType" type="checkbox" checked value="1"></label>
     </form>
     </section>
@@ -33,10 +33,16 @@
 <script>
     window.onload = init;
     var canEdit = true;
+    var lastPage = 0;
+    var maxPages = 0;
     
     function init()
     {
+        var container = document.getElementById("recipes");
+        container.style.height= ( recetario_y - document.body.offsetHeight) + "px";
+        container.addEventListener("scroll", scrollEventListener );
         loadTags();
+        lastPage = 0;
         searchRecipes();
     }
     
@@ -80,6 +86,7 @@
                 {
                     select.options[i+1] = new Option( tags[i].tag, tags[i].tag, false, false );
                 }
+                lastPage = 0;
                 searchRecipes();
             } 
             else 
@@ -102,10 +109,15 @@
         }
         else
         {
+            lastPage++;
             paramArray[0] = "tags";
             paramArray[1] = document.getElementById( "tags" ).value;
             paramArray[2] = "searchType";
             paramArray[3] = document.getElementById( "searchType" ).checked ? "true" : false;
+            paramArray[4] = "page";
+            paramArray[5] = lastPage;
+            paramArray[6] = "pageSize";
+            paramArray[7] = "10";
         }
         
         post( '../services/recipe/search', paramArray, function ( ok, xhr ) {
@@ -136,14 +148,19 @@
     function printRecipeList( recipes )
     {
         var div = document.getElementById('recipes');
-        while(div.firstChild)
+        removeSearchingIcon();
+        maxPages = recipes.numPages;
+        if ( recipes.pageNumber === 1 )
         {
-            div.removeChild(div.firstChild);
+            while(div.firstChild)
+            {
+                div.removeChild(div.firstChild);
+            }
         }
         var i = 0;
-        while ( i < recipes.length )
+        while ( i < recipes.result.length )
         {
-            div.appendChild ( printRecipeListItem( recipes[i]));
+            div.appendChild ( printRecipeListItem( recipes.result[i]));
             i++;
         }
     }
@@ -273,6 +290,42 @@
         if ( confirm("Deleted recipes can't be recovered. Are you sure ?") )
         {
             window.location.href="delete/" + id ;
+        }
+    }
+    
+    function scrollEventListener( event )
+    {
+        var container = event.target;
+
+        if ( container.scrollTop + container.clientHeight >= container.scrollHeight )
+        {
+            if ( lastPage < maxPages )
+            {
+                addSearchingIcon();
+                searchRecipes();
+            }
+        }
+    }
+    
+    function addSearchingIcon()
+    {
+        var container = document.getElementById("recipes");
+        var img = document.createElement("img");
+        img.id="searching";
+        img.src="../img/loading.gif";
+        img.style.display = "block";
+        img.style.clear = "both";
+        img.style.marginLeft = "auto";
+        img.style.marginRight = "auto";
+        container.appendChild(img);
+    }
+    
+    function removeSearchingIcon()
+    {
+        var icon = document.getElementById("searching");
+        if ( icon )
+        {
+            icon.parentNode.removeChild( icon );
         }
     }
 </script>
