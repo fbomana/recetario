@@ -6,11 +6,9 @@
 package es.ait.recetario.desktop.commands;
 
 import eu.infomas.annotation.AnnotationDetector;
-import java.io.File;
 import java.io.IOException;
 import java.lang.annotation.Annotation;
 import java.net.URISyntaxException;
-import java.net.URL;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -26,20 +24,8 @@ public class CommandFactory
     private CommandFactory() throws URISyntaxException, ClassNotFoundException, IOException 
     {
         commands = new HashMap<>();
-        URL url = this.getClass().getClassLoader().getResource( "es/ait/recetario/desktop/commands");
-        System.out.println( "URL:"+ url.toString());
-        if ( url != null )
-        {
-            if ( "jar".equals( url.getProtocol()) )
-            {
-                final AnnotationDetector cf = new AnnotationDetector( new Buscador( commands ));
-                cf.detect("es/ait/recetario/desktop/commands");
-            }
-            else
-            {
-                scanPackage( new File( url.toURI()), "es.ait.recetario.desktop.commands");
-            }
-        }
+        final AnnotationDetector cf = new AnnotationDetector( new Buscador( commands ));
+        cf.detect("es/ait/recetario/desktop/commands");
     }
 	
     public Command getCommand( String resource ) throws ClassNotFoundException, InstantiationException, IllegalAccessException
@@ -65,33 +51,6 @@ public class CommandFactory
             }
     	}
     	return instance;
-    }
-  
-    public void scanPackage( File folder, String packageName ) throws URISyntaxException, ClassNotFoundException
-    {
-    	System.out.println("package: " + packageName );
-    	File[] files = folder.listFiles();
-    	for ( File file : files )
-    	{
-            if ( file.isDirectory() )
-            {
-                scanPackage( file, packageName + "." + file.getName());
-            }
-            else if ( file.getName().endsWith(".class"))
-            {
-                System.out.println("\tclass: " + file.getAbsolutePath() );
-                Class<?> classObject = Class.forName( packageName + "." + file.getName().substring( 0, file.getName().lastIndexOf(".class")));
-                Annotation[] annotations = classObject.getAnnotations();
-                for ( Annotation annotation : annotations )
-                {
-                    System.out.println("\t\t" + annotation.annotationType().getName());
-                }
-                if ( classObject.isAnnotationPresent( CommandPath.class ))
-                {
-                    commands.put( classObject.getAnnotation(CommandPath.class ).path(), classObject );
-                }
-            }
-    	}
     }
     
     class Buscador implements AnnotationDetector.TypeReporter
@@ -122,9 +81,6 @@ public class CommandFactory
             catch ( ClassNotFoundException e )
             {
             }
-            
         }
-        
     }
-
 }
