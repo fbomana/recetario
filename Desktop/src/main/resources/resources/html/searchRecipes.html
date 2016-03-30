@@ -7,7 +7,7 @@
         <input type="text" value="" id="tags" name="tags" pattern="(?:[a-zA-Z0-9\-_]+(?:\s*,\s*[a-zA-Z0-9\-_]+)*)" onchange="checkEmpty( this );" />
     </label>
     <select id="availableTags" onChange="addTag();"></select>
-    <input type="button" value="search" onclick="searchRecipes();"><br>
+    <input type="button" value="search" onclick="lastPage = 0;searchRecipes();"><br>
     <label for="searchType">All tags<input id="searchType" name="searchType" type="checkbox" checked value="1"></label>
     
 </form>
@@ -22,13 +22,14 @@
 <div id="recipeDetail"></div>
 <script>
     var canEdit = {canEdit};
+    var lastPage = 0;
     
     window.onload = init;
     
     function init()
     {
+        lastPage = 0;
         loadTags();
-        searchRecipes();
     }
     
     function checkEmpty( text )
@@ -71,6 +72,7 @@
                 {
                     select.options[i+1] = new Option( tags[i], tags[i], false, false );
                 }
+                lastPage = 0;
                 searchRecipes();
             } 
             else 
@@ -96,10 +98,15 @@
             paramArray[0] = "tags";
             paramArray[1] = document.getElementById( "tags" ).value;
             paramArray[2] = "searchType";
-            paramArray[3] = document.getElementById( "searchType" ).checked ? "true" : false;
+            paramArray[3] = document.getElementById( "searchType" ).checked ? "true" : "false";
+            paramArray[4] = "page";
+            lastPage += 1;
+            paramArray[5] = lastPage;
+            paramArray[6] = "pageSize";
+            paramArray[7] = "10";
         }
         
-        post( '/services/RecipeSearch', paramArray, function ( ok, xhr ) {
+        post( '/services/recipe/search', paramArray, function ( ok, xhr ) {
             if ( ok ) 
             {
                 printRecipeList( JSON.parse( xhr.responseText ));
@@ -124,18 +131,35 @@
         document.getElementById("availableTags").disabled = false;
     }
     
-    function printRecipeList( recipes )
+    function printRecipeList( result )
     {
         var div = document.getElementById('recipes');
-        while(div.firstChild)
+        if ( lastPage == 1 )
         {
-            div.removeChild(div.firstChild);
+            while(div.firstChild)
+            {
+                div.removeChild(div.firstChild);
+            }
+        }
+        else
+        {
+            var more = document.getElementById("moreResults");
+            div.removeChild( more );
         }
         var i = 0;
-        while ( i < recipes.length )
+        while ( i < result.recipes.length )
         {
-            div.appendChild ( printRecipeListItem( recipes[i]));
+            div.appendChild ( printRecipeListItem( result.recipes[i]));
             i++;
+        }
+        if ( result.page < result.totalPages )
+        {
+            var more = document.createElement("a");
+            more.id="moreResults";
+            more.style.textDecoration = "none";
+            more.appendChild( document.createTextNode("more"));
+            more.onclick = function(){searchRecipes()};
+            div.appendChild( more );
         }
     }
     

@@ -6,7 +6,6 @@
 package es.ait.recetario.desktop.commands.recetario;
 
 import es.ait.recetario.desktop.commands.Command;
-import es.ait.recetario.desktop.model.Recipe;
 import es.ait.recetario.desktop.preferences.Preferences;
 import es.ait.recetario.desktop.preferences.ReadOnlyMode;
 import es.ait.recetario.desktop.templates.TemplateFactory;

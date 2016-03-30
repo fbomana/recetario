@@ -24,7 +24,7 @@ import javax.json.JsonObject;
  */
 public class Recipe
 {
-    private int recipeId;
+    private int recipeId = -1;
     private String recipeTitle;
     private String recipe;
     private Date recipeDate;

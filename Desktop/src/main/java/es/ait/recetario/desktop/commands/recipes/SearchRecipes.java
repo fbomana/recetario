@@ -2,6 +2,7 @@ package es.ait.recetario.desktop.commands.recipes;
 
 
 import es.ait.recetario.desktop.commands.Command;
+import es.ait.recetario.desktop.commands.CommandPath;
 import es.ait.recetario.desktop.templates.TemplateFactory;
 import java.io.IOException;
 import java.io.PrintWriter;
@@ -15,6 +16,7 @@ import javax.servlet.http.HttpServletResponse;
  * 
  * @author aitkiar
  */
+@CommandPath(path="/recipes/SearchRecipes")
 public class SearchRecipes extends Command
 {
     @Override

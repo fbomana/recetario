@@ -6,10 +6,12 @@
 package es.ait.recetario.desktop.preferences;
 
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.Properties;
+import java.util.logging.LogManager;
 
 /**
  * Bean containing app preferences
@@ -23,6 +25,7 @@ public class Preferences
     private boolean firstRun = false;
     private String derbyFolder;
     private File file;
+    private File logPreferences;
     private String recetarioName;
     private int recipeBackupInterval = 120000;
     private ReadOnlyMode mode;
@@ -37,6 +40,8 @@ public class Preferences
         {
             // Portable media execution
             loadProperties( file );
+            logPreferences = new File("recetario.log.properties");
+            logInit();
             return;
         }
         file = new File( System.getProperty("user.home") + "/.recetario/recetario.properties" );
@@ -44,11 +49,27 @@ public class Preferences
         {
             // Computer local version
             loadProperties( file );
+            logPreferences = new File( System.getProperty("user.home") + "/.recetario/recetario.log.properties");
+            logInit();
             return;            
         }
         firstRun = true;
     }
     
+    private void logInit()
+    {
+        if ( logPreferences.exists() && logPreferences.canRead())
+        {
+            try
+            {
+                LogManager.getLogManager().readConfiguration( new FileInputStream( logPreferences ));
+            }
+            catch ( Exception e )
+            {
+                e.printStackTrace();
+            }
+        }
+    }
     /**
      * Reads the configuration file an initialize internal state.
      * 

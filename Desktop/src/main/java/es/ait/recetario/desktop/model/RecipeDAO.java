@@ -17,6 +17,7 @@ import java.sql.SQLException;
 import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.logging.Logger;
 
 /**
  * DAO that encapsulates all BBDD operations over the table "RECIPE".
@@ -25,6 +26,8 @@ import java.util.List;
 public class RecipeDAO
 {
 
+    private Logger logger = Logger.getLogger(getClass().getName());
+    
     /**
      * Stores a new recipe in the BBDD.
      * 
@@ -179,13 +182,13 @@ public class RecipeDAO
      * @return
      * @throws SQLException 
      */
-    public List<Recipe> search( Connection connection, List<String> tags, boolean inclusive ) throws SQLException
+    public RecipeResult search( Connection connection, List<String> tags, boolean inclusive, Integer page, Integer pageSize ) throws SQLException
     {
         if ( inclusive )
         {
-            return inclusiveSearch( connection, tags );
+            return inclusiveSearch( connection, tags, page, pageSize );
         }
-        return exclusiveSearch( connection, tags );
+        return exclusiveSearch( connection, tags, page, pageSize );
     }
     
     /**
@@ -196,46 +199,105 @@ public class RecipeDAO
      * @return return a list with all the recipes but whihtout the recipe.
      * @throws SQLException 
      */
-    private List<Recipe> inclusiveSearch( Connection connection, List<String> tags ) throws SQLException
+    private RecipeResult inclusiveSearch( Connection connection, List<String> tags, Integer page, Integer pageSize ) throws SQLException
     {
-        String sql = "select a.recipe_id, a.recipe_title, a.recipe_date, "
-            + "a.recipe_update, a.recipe_origin, a.recipe_share_id, b.tag from recipe a, recipe_tags b where "
-            + "a.recipe_id = b.recipe_id ";
-        List<Recipe> result = new ArrayList<>();
-        if ( tags != null && !tags.isEmpty())
+        if ( tags == null )
         {
-            sql+= "and tag in ( ";
+            tags = new ArrayList<>();
+        }
+        String sql = "select \n" +
+                    "  a.recipe_id, a.recipe_title, a.recipe_date, a.recipe_update, a.recipe_origin, a.recipe_share_id, b.tag\n" +
+                    "from \n" +
+                    "  ( \n" +
+                    "    select \n" +
+                    "      c.recipe_id, c.recipe_title, c.recipe_date, c.recipe_update, c.recipe_origin, c.recipe_share_id\n" +
+                    "    from \n" +
+                    "      recipe c\n";
+        String sqlCuenta = "select count( distinct recipe_id ) as cuenta from recipe_tags";
+        List<Recipe> recipes = new ArrayList<>();
+        if (!tags.isEmpty())
+        {
+            sql+=   "    where\n" +
+                    "      c.recipe_id in ( select distinct( recipe_id ) from recipe_tags d \n" +
+                    "      where d.tag in ( ";
+            sqlCuenta += " where tag in ( ";
             for( int i = 0; i < tags.size(); i ++ )
             {
                 if ( i > 0 )
                 {
-                    sql+= ", ";
+                    sql += ", ";
+                    sqlCuenta += ", ";
                 }
                 sql += "?";
+                sqlCuenta += "?";
             }
-            sql += ")";
+            sql += ") )";
+            sqlCuenta += ")";
         }
         sql += " order by recipe_update desc";
-        try
-            (PreparedStatement ps = connection.prepareStatement(sql))
+        
+        if ( page != null && pageSize != null )
         {
-            for ( int i = 0; i < tags.size(); i ++ )
+            sql += " offset ? rows fetch next ? rows only";
+        }
+        sql += "  ) a, \n" +
+                "  recipe_tags b \n" +
+                "where \n" +
+                "  a.recipe_id = b.recipe_id\n" +
+                "order by \n" +
+                "  recipe_update desc, tag";
+        RecipeResult result = new RecipeResult();
+        logger.fine( sqlCuenta );
+        try
+            (PreparedStatement ps = connection.prepareStatement(sqlCuenta))
+        {
+            for ( int i = 0; i < tags.size(); i++ )
             {
-                ps.setString(i+1, tags.get( i ));
+                ps.setString( i + 1, tags.get( i ));
             }
             ResultSet rs = ps.executeQuery();
-            Recipe recipe = null;
-            while ( rs.next())
+            result.setTotalResults( 0 );
+            if ( rs.next() )
             {
-                if ( recipe == null || rs.getInt( "recipe_id") != recipe.getRecipeId() )
-                {
-                    recipe = readRecipe( rs, false );
-                    result.add( recipe );
-                }
-                recipe.addTag( rs.getString( "tag"));
+                result.setTotalResults( rs.getInt("cuenta"));
             }
             rs.close();
         }
+        logger.fine( sql );
+        if ( result.getTotalResults() > 0 )
+        {
+            try
+                (PreparedStatement ps = connection.prepareStatement(sql))
+            {
+                for ( int i = 0; i < tags.size(); i ++ )
+                {
+                    ps.setString(i+1, tags.get( i ));
+                }
+                if ( page != null && pageSize != null )
+                {
+                    ps.setInt( tags.size() + 1, (page -1) * pageSize );
+                    ps.setInt( tags.size() + 2, pageSize );
+                }
+                ResultSet rs = ps.executeQuery();
+                Recipe recipe = null;
+                while ( rs.next())
+                {
+                    if ( recipe == null || rs.getInt( "recipe_id") != recipe.getRecipeId() )
+                    {
+                        recipe = readRecipe( rs, false );
+                        recipes.add( recipe );
+                    }
+                    recipe.addTag( rs.getString( "tag"));
+                }
+                rs.close();
+            }
+        }
+        result.setPage( page != null ? page : 1 );
+        result.setPageSize( pageSize != null ? pageSize : recipes.size() );
+        result.setResults( recipes.size());
+        result.setRecipes( recipes );
+        result.setTotalPages( result.getTotalResults() / result.getPageSize() + ( result.getTotalResults() % result.getPageSize() > 0 ? 1 : 0 ));
+
         return result;
     }
 
@@ -247,28 +309,103 @@ public class RecipeDAO
      * @return return a list with all the recipes but whihtout the recipe.
      * @throws SQLException 
      */
-    private List<Recipe> exclusiveSearch( Connection connection, List<String> tags ) throws SQLException
+    private RecipeResult exclusiveSearch( Connection connection, List<String> tags, Integer page, Integer pageSize ) throws SQLException
     {
-        String sql = "select a.recipe_id, a.recipe_title, a.recipe_date, "
-            + "a.recipe_update, a.recipe_origin, a.recipe_share_id, b.tag from recipe a, recipe_tags b where "
-            + "a.recipe_id = b.recipe_id ";
-        List<Recipe> result = new ArrayList<>();
-        if ( tags != null && !tags.isEmpty())
+        if ( tags == null )
         {
+            tags = new ArrayList<>();
+        }
+        String sql = "select\n" +
+            "   a.recipe_id, a.recipe_title, a.recipe_date,a.recipe_update, a.recipe_origin, a.recipe_share_id, b.tag \n" +
+            "from \n" +
+            "  ( \n" +
+            "    select \n" +
+            "      c.recipe_id, c.recipe_title, c.recipe_date,c.recipe_update, c.recipe_origin, c.recipe_share_id\n" +
+            "    from \n" +
+            "      recipe c\n";
+        String sqlCuenta = "     select \n" +
+            "      count(*) as cuenta\n" +
+            "     from ( \n" +
+            "        select \n" +
+            "          d.recipe_id, count ( * ) as cuenta \n" +
+            "        from \n" +
+            "          recipe_tags d \n";
+        List<Recipe> recipes = new ArrayList<>();
+        if ( !tags.isEmpty())
+        {
+            sql += "   where\n" +
+                "      c.recipe_id in (\n" +
+                "     select \n" +
+                "      f.recipe_id \n" +
+                "     from ( \n" +
+                "        select \n" +
+                "          d.recipe_id, count ( * ) as cuenta \n" +
+                "        from \n" +
+                "          recipe_tags d \n" +
+                "        where \n" +
+                "          tag in (";
             
-            sql+= " and a.recipe_id in ( select f.recipe_id from ( select c.recipe_id, count ( * ) as cuenta "
-                + " from recipe_tags c where tag in (";
+            sqlCuenta += "        where \n" +
+                "          tag in (";
+
             for( int i = 0; i < tags.size(); i ++ )
             {
                 if ( i > 0 )
                 {
                     sql+= ", ";
+                    sqlCuenta+= ", ";
                 }
                 sql += "?";
+                sqlCuenta += "?";
             }
-            sql += ") group by c.recipe_id ) f where cuenta >= ? )";
+            sql += ") \n"+
+                "         group by d.recipe_id \n" +
+                "       ) f\n" +
+                "     where cuenta >= ? \n" +
+                "    )\n";
+            sqlCuenta += ") \n" ;
         }
-        sql += " order by recipe_update desc";
+        
+        sql +=  "    order by recipe_update desc\n";
+        
+        sqlCuenta += "         group by d.recipe_id \n" +
+                "       ) f\n";
+        if ( !tags.isEmpty() )
+        {
+            sqlCuenta+= "     where cuenta >= ?";
+        }
+        
+        if ( page != null && pageSize != null )
+        {
+            sql += " offset ? rows fetch next ? rows only\n";
+        }
+        sql += "  )  a, \n" +
+            "  recipe_tags b \n" +
+            "where \n" +
+            "  a.recipe_id = b.recipe_id \n" +
+            "order by recipe_update desc, tag";
+        RecipeResult result = new RecipeResult();
+        result.setTotalResults( 0 );
+        logger.fine( sqlCuenta );
+        try
+            (PreparedStatement ps = connection.prepareStatement(sqlCuenta))
+        {
+            for ( int i = 0; i < tags.size(); i ++ )
+            {
+                ps.setString(i+1, tags.get( i ));
+            }
+            if ( !tags.isEmpty() )
+            {
+                ps.setInt( tags.size() + 1, tags.size() );
+            }
+            ResultSet rs = ps.executeQuery();
+            if ( rs.next() )
+            {
+                result.setTotalResults( rs.getInt( "cuenta" ));
+            }
+            rs.close();
+        }
+        logger.fine( sql );
         try
             (PreparedStatement ps = connection.prepareStatement(sql))
         {
@@ -276,9 +413,14 @@ public class RecipeDAO
             {
                 ps.setString(i+1, tags.get( i ));
             }
-            if ( tags.size() > 0 )
+            if ( !tags.isEmpty() )
             {
                 ps.setInt( tags.size() + 1, tags.size() );
+            }
+            if ( page != null && pageSize != null )
+            {
+                ps.setInt( tags.isEmpty() ? 1 : tags.size() + 2, (page -1) * pageSize );
+                ps.setInt( tags.isEmpty() ? 2 : tags.size() + 3, pageSize );
             }
             ResultSet rs = ps.executeQuery();
             Recipe recipe = null;
@@ -287,12 +429,17 @@ public class RecipeDAO
                 if ( recipe == null || rs.getInt( "recipe_id" ) != recipe.getRecipeId() )
                 {
                     recipe = readRecipe( rs, false );
-                    result.add( recipe );
+                    recipes.add( recipe );
                 }
                 recipe.addTag( rs.getString( "tag"));
             }
             rs.close();
         }
+        result.setPage( page != null ? page : 1 );
+        result.setPageSize( pageSize != null ? pageSize : recipes.size() );
+        result.setResults( recipes.size());
+        result.setRecipes( recipes );
+        result.setTotalPages( result.getTotalResults() / result.getPageSize() + ( result.getTotalResults() % result.getPageSize() > 0 ? 1 : 0 ));
         return result;
     }
 

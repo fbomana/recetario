@@ -11,6 +11,7 @@ import es.ait.recetario.desktop.commands.CommandPath;
 import es.ait.recetario.desktop.commands.JSONServiceCommand;
 import es.ait.recetario.desktop.model.Recipe;
 import es.ait.recetario.desktop.model.RecipeDAO;
+import es.ait.recetario.desktop.model.RecipeResult;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.sql.Connection;
@@ -37,22 +38,32 @@ public class RecipeSearch extends JSONServiceCommand
             ( Connection connection = BBDDManager.getInstance("").getConnection())
         {
             List<Recipe> recipes;
+            RecipeResult result = null;
             if ( request.getParameter("importList") != null && !"".equals( request.getParameter("importList")))
             {
                 List<String> shareIds = Utils.splitString(request.getParameter("importList"), false );
                 recipes = new RecipeDAO().shareIdSearch( connection, shareIds );
+                JsonArrayBuilder builder = Json.createArrayBuilder();
+                for ( Recipe recipe : recipes )
+                {
+                    builder = builder.add( recipe.toJSON());
+                }
+                Json.createWriter(out).write( builder.build() );
+
             }
             else
             {
                 List<String> tags = Utils.string2tags( request.getParameter("tags"));
-                recipes = new RecipeDAO().search(connection, tags, !"true".equals( request.getParameter("searchType")) );
+                if ( request.getParameter("page") != null && request.getParameter("pageSize") != null )
+                {
+                    result = new RecipeDAO().search(connection, tags, !"true".equals( request.getParameter("searchType")), new Integer( request.getParameter("page")), new Integer ( request.getParameter("pageSize")) );
+                }
+                else
+                {
+                    result = new RecipeDAO().search(connection, tags, !"true".equals( request.getParameter("searchType")), null, null );
+                }
+                Json.createWriter( out ).write( result.toJSON());
             }
-            JsonArrayBuilder builder = Json.createArrayBuilder();
-            for ( Recipe recipe : recipes )
-            {
-                builder = builder.add( recipe.toJSON());
-            }
-            Json.createWriter(out).write( builder.build() );
         }
         catch ( Exception e )
         {
