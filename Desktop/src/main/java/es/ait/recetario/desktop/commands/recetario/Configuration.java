@@ -6,6 +6,7 @@
 package es.ait.recetario.desktop.commands.recetario;
 
 import es.ait.recetario.desktop.commands.Command;
+import es.ait.recetario.desktop.commands.CommandPath;
 import es.ait.recetario.desktop.preferences.Preferences;
 import es.ait.recetario.desktop.preferences.ReadOnlyMode;
 import es.ait.recetario.desktop.templates.TemplateFactory;
@@ -17,9 +18,9 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 /**
- *
- * @author aitkiar
+ * Command that displays de configuration template and process the data to save the changes.
  */
+@CommandPath(path="/recetario/Configuration")
 public class Configuration extends Command
 {
 
@@ -34,14 +35,15 @@ public class Configuration extends Command
             preferences.setRecetarioName( request.getParameter("recetarioName"));
             preferences.setRecipeBackupInterval( Integer.parseInt( request.getParameter("recipeBackupInterval")));
             preferences.setMode( ReadOnlyMode.getMode( request.getParameter("readOnlyMode")));
+            preferences.setRecipesPerPage(Integer.parseInt( request.getParameter("recipesPerPage")));
             preferences.save();
             properties.setProperty("message", "Configuration saved");
         }
         properties.setProperty("recetarioName", preferences.getRecetarioName());
         properties.setProperty("recipeBackupInterval", preferences.getRecipeBackupInterval()+ "");
         properties.setProperty("readOnlyMode", preferences.getMode().getMode() + "");
+        properties.setProperty("recipesPerPage", preferences.getRecipesPerPage() + "");
         out.print( TemplateFactory.getTemplate( request, "configuration.html", properties ));
-
     }
     
 }

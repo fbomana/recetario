@@ -23,6 +23,7 @@ public class SearchRecipes extends Command
     public void processRequest(HttpServletRequest request, HttpServletResponse response, PrintWriter out) throws IOException, ServletException
     {
         Properties properties = new Properties();
+        properties.setProperty("recipesPerPage", preferences.getRecipesPerPage() + "");
         out.print( TemplateFactory.getTemplate( request, "searchRecipes.html", properties ));
     }
     

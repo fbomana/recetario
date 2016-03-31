@@ -89,3 +89,16 @@ div#upperDiv span {
 input#synchronizeURL {
     width:70%;
 }
+
+a#moreResults {
+    text-decoration : none;
+    display : block;
+    width : 80%;
+    text-align : center;
+    padding-top:0.4em;
+}
+
+a#moreResults:hover {
+    cursor:pointer;
+    font-weight: bold;
+}

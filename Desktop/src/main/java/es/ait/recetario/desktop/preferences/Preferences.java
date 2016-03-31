@@ -29,6 +29,7 @@ public class Preferences
     private String recetarioName;
     private int recipeBackupInterval = 120000;
     private ReadOnlyMode mode;
+    private int recipesPerPage = 9;
     
     /**
      * Default constructor. It's private to force use the singleton pattern.
@@ -87,6 +88,7 @@ public class Preferences
             recetarioName = prop.getProperty("recetarioName", null );
             recipeBackupInterval = Integer.parseInt( prop.getProperty("recipeBackupInterval", "120000" ));
             mode = ReadOnlyMode.getMode( prop.getProperty("mode", "1"));
+            recipesPerPage = Integer.parseInt( prop.getProperty("recipesPerPage", "9"));
         }
         catch ( Exception e )
         {
@@ -123,6 +125,8 @@ public class Preferences
             writer.write("# Backup interval\n");
             writer.write("recipeBackupInterval=" + recipeBackupInterval + "\n");
             writer.write("mode=" + mode.getMode() + "\n");
+            writer.write("# Recipes per page of results\n");
+            writer.write("recipesPerPage=" + recipesPerPage + "\n");
         }
         catch ( IOException e )
         {
@@ -209,5 +213,21 @@ public class Preferences
     public void setMode(ReadOnlyMode mode)
     {
         this.mode = mode;
+    }
+
+    /**
+     * @return the recipesPerPage
+     */
+    public int getRecipesPerPage()
+    {
+        return recipesPerPage;
+    }
+
+    /**
+     * @param recipesPerPage the recipesPerPage to set
+     */
+    public void setRecipesPerPage(int recipesPerPage)
+    {
+        this.recipesPerPage = recipesPerPage;
     }
 }

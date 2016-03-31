@@ -7,6 +7,10 @@
             Name:<br>
         </label>
         <input type="text" value="{recetarioName}" name="recetarioName" id="recetarioName" required  onChange="clearMessage();"/><br>
+        <label for="recipesPerPage">
+            Recipes Per Page:<br>
+        </label>
+        <input type="number" id="recipesPerPage" name="recipesPerPage" value="{recipesPerPage}" required min="3">
         <label for="recipeBackupInterval">
             New/Edit Recipe backup interval ( miliseconds ):<br>
         </label>

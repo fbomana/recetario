@@ -103,7 +103,7 @@
             lastPage += 1;
             paramArray[5] = lastPage;
             paramArray[6] = "pageSize";
-            paramArray[7] = "10";
+            paramArray[7] = "{recipesPerPage}";
         }
         
         post( '/services/recipe/search', paramArray, function ( ok, xhr ) {
@@ -156,8 +156,7 @@
         {
             var more = document.createElement("a");
             more.id="moreResults";
-            more.style.textDecoration = "none";
-            more.appendChild( document.createTextNode("more"));
+            more.appendChild( document.createTextNode("more recipes..."));
             more.onclick = function(){searchRecipes()};
             div.appendChild( more );
         }
