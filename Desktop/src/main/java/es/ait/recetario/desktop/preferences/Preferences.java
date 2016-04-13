@@ -10,8 +10,12 @@ import java.io.FileInputStream;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.math.BigDecimal;
 import java.util.Properties;
 import java.util.logging.LogManager;
+import javax.json.Json;
+import javax.json.JsonObject;
+import javax.json.JsonObjectBuilder;
 
 /**
  * Bean containing app preferences
@@ -147,6 +151,17 @@ public class Preferences
         return instance;
     }
 
+    public JsonObject toJSon()
+    {
+        JsonObjectBuilder builder = Json.createObjectBuilder();
+        builder.add( "recetarioName", recetarioName != null ? recetarioName : "");
+        builder.add( "derbyFolder", derbyFolder != null ? derbyFolder : "");
+        builder.add( "recipeBackupInterval", recipeBackupInterval );
+        builder.add( "mode", mode.getMode());
+        builder.add("recipesPerPage", recipesPerPage );
+        return builder.build();
+    }
+    
     /**
      * @return the firstRun
      */

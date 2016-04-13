@@ -1,142 +1,152 @@
-/**
- * We keep the dimensions of the viewport updated in the vars recetario_x and recetario_y
- */
+var recetarioModule = angular.module("recetario",['ngSanitize', 'ngRoute']);
 
-var recetario_w = window, recetario_e = document.documentElement, recetario_g = document.getElementsByTagName('body')[0], 
-    recetario_x = recetario_w.innerWidth || recetario_e.clientWidth || recetario_g.clientWidth,
-    recetario_y = recetario_w.innerHeight|| recetario_e.clientHeight|| recetario_g.clientHeight;
-    
-document.onresize = function( event )
-{
-    var recetario_x = recetario_w.innerWidth || recetario_e.clientWidth || recetario_g.clientWidth,
-    recetario_y = recetario_w.innerHeight|| recetario_e.clientHeight|| recetario_g.clientHeight;
-}
+recetarioModule.config( ['$routeProvider', function($routeProvider) {
+    $routeProvider.when('/home', {
+        templateUrl : 'home.html',
+        controller : 'HomeController'
+    }).when ('/config', {
+        templateUrl : 'config.html',
+        controller : 'ConfigController'
+    }).otherwise('/home');
+}]);
 
-/**
- * Changes the class of the selected menu option
- * @returns {undefined}
- */
-function lightMenu()
-{
-    var path = window.location.pathname;
-    var id = "";
-    if ( path == "/recipes/SearchRecipes")
-    {
-        id = "search";
-    }
-    else if ( path == "/recipes/NewRecipe")
-    {
-        id = "new";
-    }
-    else if ( path == "/recipes/SynchronizeRecipes")
-    {
-        id = "synchronize";
-    }
-    else if ( path == "/recetario/Configuration")
-    {
-        id="configuration";
-    }
-    
-    if ( id )
-    {
-        document.getElementById( id ).className="menuSelected";
-    }
-    
-    if ( !canEdit )
-    {
-        document.getElementById("new").style.display = "none";
-        document.getElementById("synchronize").style.display = "none";
-        document.getElementById("configuration").style.display = "none";
-    }
-}
-/**
- * Create an empty copy of a DOM element and replace the original by it. Returns the
- * new object.
- * 
- * @param {type} id
- * @returns {unresolved}
- */
-function ClearOptionsFast( id )
-{
-    var selectObj = document.getElementById(id);
-    var selectParentNode = selectObj.parentNode;
-    var newSelectObj = selectObj.cloneNode(false);
-    selectParentNode.replaceChild(newSelectObj, selectObj);
-    return newSelectObj;
-}
-
-/**
- * Function that make a post call to a service using paramArray and url.
- * When the call is completed it invokes the callback fuction whith two parameters
- * a boolean value indicating if it end up ok and the HttpServletRequest
- * @param {type} url
- * @param {type} paramArray
- * @param {type} callback
- * @returns {undefined}
- */
-function post( url, paramArray, callback, async )
-{
-    var xhr = new XMLHttpRequest();
-    var params = "";
-
-    for ( var i = 0; paramArray && i < paramArray.length; i = i + 2 )
-    {
-        if ( i > 0 )
-        {
-            params+="&";
-        }
-        params += paramArray[i] + "=" + encodeURIComponent( paramArray[i+1] );
-    }
-    xhr.open('post', url, arguments.length == 3 ? async : true  );
-    xhr.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
-    xhr.setRequestHeader("Content-length", params.length);
-    xhr.setRequestHeader("Connection", "close");
-
-    // Track the state changes of the request.
-    xhr.onreadystatechange = function () 
-    {
-        var DONE = 4;
-        var OK = 200;
-        if (xhr.readyState === DONE) 
-        {
-            callback( xhr.status === OK, xhr );
+recetarioModule.directive("mainMenu", [ '$window', function( $window ) {
+    return { 
+        template : "<span id='search' ng-class='getSelectedClass(0)'><a ng-href='#/home'>Search Recipes</a></span>" +
+                "<span id='new' ng-class='getSelectedClass(1)' ng-show='getCanEdit()'><a href='/recipes/NewRecipe'>New Recipe</a></span>" +
+                "<span id='synchronize' ng-class='getSelectedClass(2)' ng-show='getCanEdit()'><a href='/recipes/SynchronizeRecipes'>Synchronize</a></span>" + 
+                "<span id='configuration' ng-class='getSelectedClass(3)' ng-show='getCanEdit()'><a ng-href='#/config'>Configuration</a></span>",
+        restrict : "A",
+        scope : {
+            canEdit : "@mainMenu"
+        },
+        link: function (scope, element, attributes) {
+            scope.getSelectedClass = function( linkId )
+            {
+                var path = $window.location.pathname;
+                var id = 0;
+                if ( path === "/html/index.html")
+                {
+                    id = 0;
+                }
+                else if ( path === "/recipes/NewRecipe")
+                {
+                    id = 1;
+                }
+                else if ( path === "/recipes/SynchronizeRecipes")
+                {
+                    id = 2;
+                }
+                else if ( path === "/recetario/Configuration")
+                {
+                    id = 3;
+                }
+                if ( linkId === id )
+                {
+                    return 'menuSelected';
+                }
+                return "";
+            };
+            scope.getCanEdit = function() {
+                return scope.canEdit == "true";
+            }
         }
     };
-    xhr.send( params );
-}
+}]);
 
-/**
- * Makes a get ajax call.
- * @param {type} url
- * @param {type} paramArray
- * @param {type} callback
- * @param {type} async
- * @returns {undefined}
- */
-function get( url, paramArray, callback, async )
-{
-    var xhr = new XMLHttpRequest();
-    var params = "";
-
-    for ( var i = 0; paramArray && i < paramArray.length; i = i + 2 )
+recetarioModule.filter("array2string", function() {
+    return function( input )
     {
-        if ( i > 0 )
+        if ( !input || !input.constructor === Array )
         {
-            params+="&";
+            return input;
         }
-        params += paramArray[i] + "=" + encodeURIComponent( paramArray[i+1] );
+        return input.reduce( function( total, item ) {
+            if ( !total )
+            {
+                return item;
+            }
+            else
+            {
+                return total + ", " + item;
+            }    
+        });
     }
-    xhr.open('GET', url + "?" + params, arguments.length == 3 ? async : true  );
+});
 
-    // Track the state changes of the request.
-    xhr.onreadystatechange = function () 
+recetarioModule.filter("markdown", function() {
+    return function( input )
     {
-        var DONE = 4;
-        var OK = 200;
-        if (xhr.readyState === DONE) 
+        if ( !input )
         {
-            callback( xhr.status === OK, xhr );
+            return "";
         }
-    };
-    xhr.send( params );
-}
+        return marked( input );
+    }
+});
+                                            
+recetarioModule.service('preferencesService', [ '$http', '$timeout', '$q', function( $http,  $timeout, $q ) {
+
+    var thePreferences = null;
+    
+    this.getPreferences = function() {                                                   
+        var deferred = $q.defer();
+        $http.get( "http://localhost:8080/services/preferences").then( function( response ) 
+        {
+            thePreferences = response.data;
+            deferred.resolve( thePreferences );
+        }, function ( response ) {
+            console.log( response.statusText );
+            deferred.reject();
+        });
+        return deferred.promise;
+    }
+}]);
+
+recetarioModule.service("recipeService", ['$http', '$q', 'preferencesService', function( $http, $q, preferencesService ) {
+    var baseUrl = "http://localhost:8080/services/";
+    
+    this.getRecipe = function( id )
+    {
+        var deferred = $q.defer();
+        $http.get( baseUrl + "recipe?id=" + id ).then( function(response) {
+            deferred.resolve( response.data )
+        }, function ( response ) {
+            console.log("Error " + response.status);
+            deferred.reject( null );
+        });
+        return deferred.promise;
+    }
+    
+    this.getRecipes = function ( page, tags, searchType )
+    {
+        var deferred = $q.defer();
+        preferencesService.getPreferences().then( function( pref ) {                                                   
+            $http({
+                    method : "GET",
+                    url : "http://localhost:8080/services/recipe/search",
+                    params : {
+                        page : page,
+                        pageSize : pref.recipesPerPage,
+                        tags : tags,
+                        searchType : searchType
+                    }
+                }).then( function( response ) {
+                    console.log("[INFO]Se encuentran recetas");
+                    deferred.resolve( response.data );
+                }, function ( response ){
+                    console.log("Error during recipe recover: " + response.status );
+                    deferred.rejcet( null );
+                });
+        });
+        return deferred.promise;
+    }
+}]);
+
+recetarioModule.controller("recetarioController", ['$scope', '$location', 'preferencesService', function( $scope, $location, preferencesService ) {
+    $scope.canEdit = false;
+    preferencesService.getPreferences().then( function( pref ) {
+        $scope.canEdit =  pref.mode === 0 || ( pref.mode === 1 && ( $location.host() === "localhost" || $location.host() === "127.0.0.1"));
+    });
+}]);
+       

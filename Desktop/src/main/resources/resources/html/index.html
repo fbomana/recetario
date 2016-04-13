@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <link rel='stylesheet' href='../css/recetario.css'>
+    <link rel="stylesheet" href="../css/searchRecipe.css">
+    <script src="../js/angular.min.js"></script>
+    <script src="../js/angular-sanitize.min.js"></script>
+    <script src="../js/angular-route.min.js"></script>
+    <script src="../js/recetario.js"></script>
+    <script src="../js/home.js"></script>
+    <script src="../js/marked.min.js"></script>    
+</head>
+<body ng-app="recetario" ng-controller="recetarioController">
+<div id="menu" main-menu="{{canEdit}}">
+    
+</div>
+<ng-view>
+</ng-view>
+</body>
+</html>

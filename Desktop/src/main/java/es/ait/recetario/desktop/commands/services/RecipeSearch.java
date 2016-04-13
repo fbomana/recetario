@@ -56,11 +56,11 @@ public class RecipeSearch extends JSONServiceCommand
                 List<String> tags = Utils.string2tags( request.getParameter("tags"));
                 if ( request.getParameter("page") != null && request.getParameter("pageSize") != null )
                 {
-                    result = new RecipeDAO().search(connection, tags, !"true".equals( request.getParameter("searchType")), new Integer( request.getParameter("page")), new Integer ( request.getParameter("pageSize")) );
+                    result = new RecipeDAO().search(connection, tags, !"1".equals( request.getParameter("searchType")), new Integer( request.getParameter("page")), new Integer ( request.getParameter("pageSize")) );
                 }
                 else
                 {
-                    result = new RecipeDAO().search(connection, tags, !"true".equals( request.getParameter("searchType")), null, null );
+                    result = new RecipeDAO().search(connection, tags, !"1".equals( request.getParameter("searchType")), null, null );
                 }
                 Json.createWriter( out ).write( result.toJSON());
             }

@@ -37,7 +37,10 @@ div.recipe span img {
 
 div#recipeDetail {
     position:absolute;
-    display:none;
+    left:15%;
+    top:10%;
+    width:70%;
+    height:80%;
     border:2px solid green;
     border-radius:25px;
     overflow: hidden;
@@ -51,6 +54,7 @@ div#recipeDetail span.right {
 
 div#recipeDetail div.recipeDiv {
     overflow:auto;
+    height:calc( 100% - 5em);
 }
 
 div#recipeDetail span.tags {

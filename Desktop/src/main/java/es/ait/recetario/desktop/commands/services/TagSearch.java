@@ -7,6 +7,7 @@ package es.ait.recetario.desktop.commands.services;
 
 import es.ait.recetario.desktop.Utils;
 import es.ait.recetario.desktop.commands.BBDD.BBDDManager;
+import es.ait.recetario.desktop.commands.CommandPath;
 import es.ait.recetario.desktop.commands.JSONServiceCommand;
 import es.ait.recetario.desktop.model.TagDAO;
 import java.io.IOException;
@@ -24,11 +25,24 @@ import javax.servlet.http.HttpServletResponse;
  * search parameter.
  * @author aitkiar
  */
+@CommandPath(path="/services/tags")
 public class TagSearch extends JSONServiceCommand
 {
 
     @Override
     public void processRequest(HttpServletRequest request, HttpServletResponse response, PrintWriter out) throws IOException, ServletException
+    {
+        switch ( request.getMethod() )
+        {
+            case "GET":
+                get( request, response, out );
+                break;
+            default:
+                response.sendError(405, "Method no allowed");
+        }
+    }
+
+    public void get(HttpServletRequest request, HttpServletResponse response, PrintWriter out) throws IOException, ServletException
     {
         List<String> excludedTags = Utils.string2tags( request.getParameter("tags"));
         try

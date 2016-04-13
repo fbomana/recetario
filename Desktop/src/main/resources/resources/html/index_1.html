@@ -1,5 +1,16 @@
-<link rel="stylesheet" href="/css/searchRecipe.css">
-<script src="/js/marked.min.js"></script>
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <link rel='stylesheet' href='/css/recetario.css'>
+    <link rel="stylesheet" href="/css/searchRecipe.css">
+    <script src="/js/angular.min.js"></script>
+    <script src="/js/menu.js"></script>
+    <script src="/js/index.js"></script>    
+    <script src="/js/marked.min.js"></script>    
+</head>
+<body ng-app="index" ng-controller="indexController">
+<div id="menu" main-menu=""></div>
 <div id="content">
 <section>
 <form method="post" action="/recipes/SearchRecipes" onsubmit="searchRecipes();return false;">
@@ -293,4 +304,7 @@
         }
     }
     
+    lightMenu( canEdit );
 </script>
+</body>
+</html>

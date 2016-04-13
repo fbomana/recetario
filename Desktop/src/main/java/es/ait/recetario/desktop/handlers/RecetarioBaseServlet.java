@@ -10,7 +10,6 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import org.eclipse.jetty.server.Request;
 
 /**
  *
@@ -22,6 +21,8 @@ public class RecetarioBaseServlet extends HttpServlet
     
     public void processRequest( HttpServletRequest request, HttpServletResponse response ) throws ServletException, IOException
     {
+        //Enable Cors
+        response.addHeader("Access-Control-Allow-Origin", "*");
         String resource = request.getRequestURI();
         BaseHandler handler = HandlerFactory.getHandler( resource );
         response.setContentType( handler.getContentType(resource, request, response) );

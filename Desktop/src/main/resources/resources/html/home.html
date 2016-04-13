@@ -1,0 +1,35 @@
+<div id="content" ng-controller="HomeController">
+<section>
+<form method="post" action="../recipes/SearchRecipes" onsubmit="searchRecipes();return false;">
+    <label for="tags">Tags:
+        <input type="text" value="" id="tags" name="tags" pattern="(?:[a-zA-Z0-9\-_]+(?:\s*,\s*[a-zA-Z0-9\-_]+)*)" ng-model="tagString" ng-model-options="{ updateOn: 'default blur', debounce: { 'default': 1000, 'blur': 0 }}" ng-change="loadTags();resetRecipes();"../>
+    </label>
+    <select id="availableTags" ng-model="tag" ng-options="tag for tag in tags" ng-change="addTag()"></select>
+    <input type="button" value="search" ng-click="resetRecipes();"><br>
+    <label for="searchType">All tags<input id="searchType" name="searchType" type="checkbox" checked ng-model="searchType" ng-true-value="1" ng-false-value="0" ng-change="resetRecipes();"></label>
+</form>
+</section>
+<section>
+    <h1>Recipes</h1>
+    <div id="recipes">
+        <div class="recipe" ng-repeat="recipe in recipes">
+            <a href="" ng-click="openDetail( recipe )">{{recipe.title}}</a>
+            <span class="right" ng-show="canEdit">
+                <a href=""><img src="../img/edit.png"></a>
+                <a href=""><img src="../img/delete.png"></a>
+            </span>
+            <br>
+            {{recipe.tags | array2string }}
+            <span class="right">{{recipe.update}}</span>
+        </div>
+        <a href="" id="moreResults" ng-click="searchRecipes()" ng-show="page < totalPages">more recipes...</a>
+    </div>
+</section>
+<div id="recipeDetail" ng-show="showDetail">
+    <span class="right" ng-click="closeDetail()">X</span>
+    <h1>{{ recipeDetail.title}}</h1>
+    <div class="recipeDiv" ng-bind-html="recipeDetail.recipe | markdown">
+    </div>
+    <span class="tags">{{recipeDetail.tags | array2string }}</span>        
+</div>
+</div>
