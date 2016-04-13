@@ -8,11 +8,18 @@ package es.ait.recetario.desktop;
 import es.ait.recetario.desktop.commands.BBDD.BBDDManager;
 import es.ait.recetario.desktop.handlers.RecetarioBaseServlet;
 import es.ait.recetario.desktop.preferences.Preferences;
+
+import  es.ait.recetario.desktop.commands.JSonServiceFilter;
+
 import java.io.IOException;
 import java.net.DatagramSocket;
 import java.net.ServerSocket;
 import java.sql.SQLException;
+import java.util.EnumSet;
+import javax.servlet.DispatcherType;
 import org.eclipse.jetty.server.Server;
+import org.eclipse.jetty.servlet.FilterHolder;
+import org.eclipse.jetty.servlet.FilterMapping;
 import org.eclipse.jetty.servlet.ServletContextHandler;
 import org.eclipse.jetty.servlet.ServletHolder;
 
@@ -120,6 +127,7 @@ public class Recetario
         server.setHandler(context);
         ServletHolder holder = new ServletHolder(new RecetarioBaseServlet());
         context.addServlet(holder, "/*");
+        context.addFilter( JSonServiceFilter.class, "/*", EnumSet.of( DispatcherType.REQUEST ));
 
         server.start();
         server.dumpStdErr();

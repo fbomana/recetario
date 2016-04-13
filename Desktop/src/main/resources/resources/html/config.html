@@ -6,25 +6,20 @@
         <label for="recetarioName">
             Name:<br>
         </label>
-        <input type="text" value="{{recetarioName}}" name="recetarioName" id="recetarioName" required/><br>
+        <input type="text" ng-model="preferences.recetarioName" name="recetarioName" id="recetarioName" required/><br>
         <label for="recipesPerPage">
             Recipes Per Page:<br>
         </label>
-        <input type="number" id="recipesPerPage" name="recipesPerPage" value="{{recipesPerPage}}" required min="3"><br>
+        <input type="number" id="recipesPerPage" name="recipesPerPage" ng-model="preferences.recipesPerPage" required min="3"><br>
         <label for="recipeBackupInterval">
             New/Edit Recipe backup interval ( miliseconds ):<br>
         </label>
-        <input type="number" value="{recipeBackupInterval}" name="recipeBackupInterval" id="recipeBackupInterval" required min="30000"/><br>
+        <input type="number" ng-model="preferences.recipeBackupInterval" name="recipeBackupInterval" id="recipeBackupInterval" required min="30000"/><br>
         <label for="readOnlyMode">
             Read only mode:<br>
         </label>
-        <select name="readOnlyMode" id="readOnlyMode">
-            <option value="0">Full Edit</option>
-            <option value="1">Local Edit</option>
-            <option value="2"> Read Only</option>
-        </select><br>
-        
-        <input type="submit" value="send"/>
+        <select ng-model="preferences.mode" name="readOnlyMode" id="readOnlyMode" ng-options="mode.id as mode.label for mode in modes"></select><br>
+        <input type="button" value="send" ng-click="savePreferences()"/>
     </form>
     <p id="message" ng-if="message != null">{{message}}</p>
 </div>

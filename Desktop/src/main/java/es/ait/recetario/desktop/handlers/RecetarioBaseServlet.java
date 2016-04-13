@@ -17,12 +17,10 @@ import javax.servlet.http.HttpServletResponse;
  */
 public class RecetarioBaseServlet extends HttpServlet
 {
-    
-    
+
     public void processRequest( HttpServletRequest request, HttpServletResponse response ) throws ServletException, IOException
     {
-        //Enable Cors
-        response.addHeader("Access-Control-Allow-Origin", "*");
+        response.setHeader("Access-Control-Allow-Origin", "*");        
         String resource = request.getRequestURI();
         BaseHandler handler = HandlerFactory.getHandler( resource );
         response.setContentType( handler.getContentType(resource, request, response) );
@@ -37,6 +35,18 @@ public class RecetarioBaseServlet extends HttpServlet
     
     @Override
     protected void doPost( HttpServletRequest request, HttpServletResponse response ) throws ServletException, IOException
+    {
+        processRequest( request, response );
+    }
+    
+    @Override
+    protected void doPut( HttpServletRequest request, HttpServletResponse response ) throws ServletException, IOException
+    {
+        processRequest( request, response );
+    }
+    
+    @Override
+    protected void doDelete( HttpServletRequest request, HttpServletResponse response ) throws ServletException, IOException
     {
         processRequest( request, response );
     }

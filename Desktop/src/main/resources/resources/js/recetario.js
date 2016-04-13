@@ -1,6 +1,7 @@
 var recetarioModule = angular.module("recetario",['ngSanitize', 'ngRoute']);
 
-recetarioModule.config( ['$routeProvider', function($routeProvider) {
+recetarioModule.config( ['$routeProvider','$httpProvider', function($routeProvider, $httpProvider) {
+    $httpProvider.defaults.useXDomain = true;
     $routeProvider.when('/home', {
         templateUrl : 'home.html',
         controller : 'HomeController'
@@ -97,9 +98,13 @@ recetarioModule.service('preferencesService', [ '$http', '$timeout', '$q', funct
             deferred.resolve( thePreferences );
         }, function ( response ) {
             console.log( response.statusText );
-            deferred.reject();
+            deferred.reject( response.statusText );
         });
         return deferred.promise;
+    }
+    
+    this.save = function( preferences ) {
+        return $http.post("http://localhost:8080/services/preferences", preferences );
     }
 }]);
 

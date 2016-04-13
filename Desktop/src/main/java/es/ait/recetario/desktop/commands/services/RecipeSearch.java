@@ -38,7 +38,7 @@ public class RecipeSearch extends JSONServiceCommand
             ( Connection connection = BBDDManager.getInstance("").getConnection())
         {
             List<Recipe> recipes;
-            RecipeResult result = null;
+            RecipeResult result;
             if ( request.getParameter("importList") != null && !"".equals( request.getParameter("importList")))
             {
                 List<String> shareIds = Utils.splitString(request.getParameter("importList"), false );
