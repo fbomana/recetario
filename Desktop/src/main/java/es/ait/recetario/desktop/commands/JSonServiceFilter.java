@@ -39,6 +39,7 @@ public class JSonServiceFilter implements Filter
                 HttpServletResponse response = ( HttpServletResponse )resp;
                 response.setHeader("Access-Control-Allow-Origin", "*");
                 response.setHeader("Access-Control-Allow-Headers", request.getHeader("Access-Control-Request-Headers")); 
+                response.setHeader("Access-Control-Allow-Method", request.getHeader("Access-Control-Request-Method")); 
             }
         }
         fc.doFilter(req, resp);

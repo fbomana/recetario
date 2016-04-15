@@ -40,13 +40,25 @@ public class Recipe
     public Recipe( JsonObject json ) throws ParseException
     {
         SimpleDateFormat sdf = new SimpleDateFormat( "dd/MM/yyyy HH:mm:ss" );
-        recipeId = json.getInt( "id" );
+        if ( json.containsKey("id"))
+        {
+            recipeId = json.getInt( "id" );
+        }
         recipeTitle = json.getString("title");
         recipe = json.getString("recipe");
-        recipeDate = sdf.parse( json.getString("date"));
-        recipeUpdate = sdf.parse( json.getString( "update"));
+        if ( json.containsKey("date"))
+        {
+            recipeDate = sdf.parse( json.getString("date"));
+        }
+        if ( json.containsKey("uopdate"))
+        {
+            recipeUpdate = sdf.parse( json.getString( "update"));
+        }
         recipeOrigin = json.getString( "origin" );
-        recipeShareId = json.getString( "shareId" );
+        if ( json.containsKey("shareId"))
+        {
+            recipeShareId = json.getString( "shareId" );
+        }
         JsonArray array = json.getJsonArray( "tags" );
         for ( int i = 0; array != null && i < array.size(); i++ )
         {

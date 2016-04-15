@@ -36,7 +36,7 @@ recetarioModule.controller("HomeController", ['$scope', '$http', '$rootScope', '
     }
     
     $scope.searchRecipes = function()  {
-        recipeService.getRecipes( $scope.page + 1, $scope.tagString, $scope.searchType ).
+        recipeService.getRecipes( $scope.tagString, $scope.searchType, $scope.page + 1, $scope.preferences.recipesPerPage ).
             then( function( data ) {
                 console.log("[INFO]Se encuentran recetas");
                 for ( var i = 0; i < data.recipes.length; i ++ )
@@ -71,6 +71,20 @@ recetarioModule.controller("HomeController", ['$scope', '$http', '$rootScope', '
         $scope.searchRecipes();
     }
     
-    $scope.loadTags();
-    $scope.resetRecipes();
+    // Retrasamon la inicialización a que las preferencias estén cargadas.
+    if ( $scope.recetarioJSinitialized )
+    {
+        $scope.loadTags();
+        $scope.resetRecipes();
+    }
+    else
+    {
+        $watch($scope.recetarioJSinitialized, function() {
+            if ( $scope.recetarioJSinitialized )
+            {
+                $scope.loadTags();
+                $scope.resetRecipes();
+            }
+        });
+    }
 }]);

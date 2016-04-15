@@ -1,0 +1,30 @@
+<link rel="stylesheet" href="../css/newRecipe.css"/>
+<div id="content">
+<span style="color:red;" ng-if="errorMessage != ''">{{errorMessage}}</span>
+<section id="formSection" style="left">
+  <div class="contentBox">
+    <h1>New Recipe</h1>
+    <form method="post" action="{action}" name="newRecipe">
+        <input type="hidden" name="post" value="{action}"/>
+        <input type="hidden" name="id" id="id" value="{id}"/>
+        <label for="title">Title:<br>
+            <input type="text" ng-model="recipe.title" required id="title" name="title"/>
+        </label><br>
+        <label for="contentEditor" id="editor">Content:<br>
+            <textarea required id="contentEditor" name="contentEditor" v-model="input" debounce="300" ng-model="recipe.recipe"></textarea>
+            <div v-html="input | marked" id="preview"></div>
+        </label><br>
+        <label for="tags">Tags:<br>
+            <input type="text" required id="tagString" pattern="[a-zA-Z0-9\-_]+(?:\s*,\s*[a-zA-Z0-9\-_]+)*" name="tagString" ng-model="tagString"  ng-model-options="{ updateOn: 'default blur', debounce: { 'default': 1000, 'blur': 0 }}" ng-change="loadTags()"/>
+        </label><select id="availableTags" ng-model="tag" ng-change="addTag();" ng-options="tag for tag in avaliableTags"></select><br>
+        <br>
+        <input type="button" value="save" ng-click="save();"/>
+    </form>
+  </div>
+</section>
+<section id="previewSection" style="right">
+    <div class="contentBox">
+    <h1>Preview</h1>
+    </div>
+</section>
+</div>

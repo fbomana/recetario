@@ -34,6 +34,15 @@ public class CommandFactory
     	{
             return ( Command )commands.get( resource ).newInstance();
     	}
+        else
+        {
+            // Check if its a REST url in the form resource/id
+            String subresource = resource.substring(0, resource.lastIndexOf("/"));
+            if ( commands.get( subresource ) != null )
+            {
+                return ( Command )commands.get( subresource ).newInstance();
+            }
+        }
         return ( Command ) Class.forName( "es.ait.recetario.desktop.commands" + resource.replaceAll("\\/", ".")).newInstance();
     }
     

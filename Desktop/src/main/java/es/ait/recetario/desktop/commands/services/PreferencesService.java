@@ -23,7 +23,7 @@ import javax.servlet.http.HttpServletResponse;
  * @author aitkiar
  */
 @CommandPath(path="/services/preferences")
-public class Preferences extends JSONServiceCommand
+public class PreferencesService extends JSONServiceCommand
 {
    
     @Override

@@ -22,7 +22,7 @@ input#title {
     width:100%;
 }
 
-input#tags {
+input#tagString {
     width:75%
 }
 textarea {
