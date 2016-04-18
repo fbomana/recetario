@@ -9,7 +9,6 @@ import es.ait.recetario.desktop.commands.BBDD.BBDDManager;
 import es.ait.recetario.desktop.handlers.RecetarioBaseServlet;
 import es.ait.recetario.desktop.preferences.Preferences;
 
-import  es.ait.recetario.desktop.commands.JSonServiceFilter;
 
 import java.io.IOException;
 import java.net.DatagramSocket;
@@ -19,9 +18,9 @@ import java.util.EnumSet;
 import javax.servlet.DispatcherType;
 import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.servlet.FilterHolder;
-import org.eclipse.jetty.servlet.FilterMapping;
 import org.eclipse.jetty.servlet.ServletContextHandler;
 import org.eclipse.jetty.servlet.ServletHolder;
+import org.eclipse.jetty.servlets.CrossOriginFilter;
 
 /**
  *
@@ -127,8 +126,12 @@ public class Recetario
         server.setHandler(context);
         ServletHolder holder = new ServletHolder(new RecetarioBaseServlet());
         context.addServlet(holder, "/*");
-        context.addFilter( JSonServiceFilter.class, "/*", EnumSet.of( DispatcherType.REQUEST ));
-
+        FilterHolder filterHolder = new FilterHolder(new CrossOriginFilter());
+        filterHolder.setInitParameter(CrossOriginFilter.ALLOWED_ORIGINS_PARAM, "*");
+        filterHolder.setInitParameter(CrossOriginFilter.ALLOWED_HEADERS_PARAM, "*");
+        filterHolder.setInitParameter(CrossOriginFilter.ALLOWED_METHODS_PARAM, "GET,PUT,POST,DELETE");
+        context.addFilter(filterHolder,"/*",EnumSet.allOf(DispatcherType.class));
+        
         server.start();
         server.dumpStdErr();
         server.join();

@@ -1,4 +1,4 @@
-recetarioModule.controller("HomeController", ['$scope', '$http', '$rootScope', '$timeout','recipeService', function($scope, $http, $rootScope, $timeout, recipeService )
+recetarioModule.controller("HomeController", ['$scope', '$http', '$rootScope', '$timeout','recipeService', '$location', function($scope, $http, $rootScope, $timeout, recipeService, $location )
 {
     $scope.tag = "";
     $scope.tagString = "";
@@ -71,6 +71,14 @@ recetarioModule.controller("HomeController", ['$scope', '$http', '$rootScope', '
         $scope.searchRecipes();
     }
     
+    $scope.delete = function( id ) {
+        recipeService.delete( id ).then( function( response ) {
+            $scope.resetRecipes();
+        }, function( response ) {
+            console.log( "error");
+        });
+    }
+    
     // Retrasamon la inicialización a que las preferencias estén cargadas.
     if ( $scope.recetarioJSinitialized )
     {
@@ -79,7 +87,7 @@ recetarioModule.controller("HomeController", ['$scope', '$http', '$rootScope', '
     }
     else
     {
-        $watch($scope.recetarioJSinitialized, function() {
+        $scope.$watch($scope.recetarioJSinitialized, function() {
             if ( $scope.recetarioJSinitialized )
             {
                 $scope.loadTags();

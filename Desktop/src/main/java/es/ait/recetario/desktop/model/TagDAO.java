@@ -130,18 +130,20 @@ public class TagDAO
         List<String> result = new ArrayList<>();
         if ( !includedTags.isEmpty())
         {
-            sql+= " where recipe_id in ( " +
-                "select recipe_id from recipe_tags where tag in ";
+            sql+= " where recipe_id in (";
             String separator = " ";
+            String separator2 = " ";
             String selector = "(";
             for ( String tag : includedTags )
             {
-                selector+= separator + "?";
-                separator = ", ";
+                sql += separator + "(select recipe_id from recipe_tags where tag = ?)";
+                selector += separator2 + "?";
+                separator = " intersect";
+                separator2 = ", ";
             }
             selector += " )";
             
-            sql += selector + ") and tag not in " + selector;
+            sql += ") and tag not in " + selector;
                     
         }
         sql += " order by tag";

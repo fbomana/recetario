@@ -28,8 +28,8 @@ div.recipe span {
 }
 
 div.recipe span img {
-    width:1em;
-    height:1em;
+    width:1.2em;
+    height:1.2em;
     cursor:pointer;
     border:0;
     margin-left:0.6em;

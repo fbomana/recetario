@@ -15,8 +15,8 @@
         <div class="recipe" ng-repeat="recipe in recipes">
             <a href="" ng-click="openDetail( recipe )">{{recipe.title}}</a>
             <span class="right" ng-show="canEdit">
-                <a href=""><img src="../img/edit.png"></a>
-                <a href=""><img src="../img/delete.png"></a>
+                <a ng-href="#/edit/{{recipe.id}}"><img src="../img/edit.png"></a>
+                <img src="../img/delete.png" ng-click="delete(recipe.id);">
             </span>
             <br>
             {{recipe.tags | array2string }}

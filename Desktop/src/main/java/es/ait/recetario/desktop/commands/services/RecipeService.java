@@ -35,17 +35,16 @@ public class RecipeService extends JSONServiceCommand
         try ( Connection connection = BBDDManager.getInstance(null).getConnection())
         {
             RecipeDAO dao = new RecipeDAO();
-            String resource = request.getRequestURI();
-            if ( resource.equals("/services/recipe"))
+            String id = getUrlParam( 1 );
+            if ( id == null)
             {
                 // All recipes forbiden
                 response.sendError( 501, "501 - Not Implemented.\nThe search for the entire recipe list it's forbidden due to it's huge size. Use RecipeSearch service instead.");
             }
             else
             {
-                int id = Integer.parseInt( resource.substring( resource.lastIndexOf('/') + 1 ));
                 JsonWriter writer = Json.createWriter( out );
-                Recipe recipe = dao.search(connection, id);
+                Recipe recipe = dao.search(connection, Integer.parseInt( id ));
                 if ( recipe != null )
                 {
                     writer.write( recipe.toJSON());
@@ -121,19 +120,14 @@ public class RecipeService extends JSONServiceCommand
         try ( Connection connection = BBDDManager.getInstance(null).getConnection())
         {
             RecipeDAO dao = new RecipeDAO();
-            try
+
+            String id = getUrlParam( 1 );
+            if ( id == null)
             {
-                Recipe recipe = new Recipe( Json.createReader( request.getInputStream()).readObject());
-                if ( recipe.getRecipeId() == -1 )
-                {
-                    throw new ParseException("Id cannot be null", 0 );
-                }
-                dao.delete( connection, recipe.getRecipeId());
+                // All recipes forbiden
+                response.sendError( 501, "501 - Not Implemented.\nDeletitng the entire tag collection it's not supported");
             }
-            catch ( ParseException e )
-            {
-                response.sendError(400, "400 Bad Request: the json format of the recipe it's invalid.");
-            }
+            dao.delete( connection, Integer.parseInt( id ));
         }
         catch ( SQLException e )
         {

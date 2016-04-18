@@ -8,17 +8,20 @@ recetarioModule.config( ['$routeProvider','$httpProvider', function($routeProvid
     }).when("/new", {
         templateUrl : "edit.html",
         controller : "EditController"
+    }).when("/edit/:id", {
+        templateUrl : "edit.html",
+        controller : "EditController"
     }).when ('/config', {
         templateUrl : 'config.html',
         controller : 'ConfigController'
     }).otherwise('/home');
 }]);
 
-recetarioModule.directive("mainMenu", [ '$window', function( $window ) {
+recetarioModule.directive("mainMenu", [ '$location', function( $location ) {
     return { 
         template : "<span id='search' ng-class='getSelectedClass(0)'><a ng-href='#/home'>Search Recipes</a></span>" +
-                "<span id='new' ng-class='getSelectedClass(1)' ng-show='getCanEdit()'><a href='#/new'>New Recipe</a></span>" +
-                "<span id='synchronize' ng-class='getSelectedClass(2)' ng-show='getCanEdit()'><a href='/recipes/SynchronizeRecipes'>Synchronize</a></span>" + 
+                "<span id='new' ng-class='getSelectedClass(1)' ng-show='getCanEdit()'><a ng-href='#/new'>New Recipe</a></span>" +
+                "<span id='synchronize' ng-class='getSelectedClass(2)' ng-show='getCanEdit()'><a ng-href='/recipes/SynchronizeRecipes'>Synchronize</a></span>" + 
                 "<span id='configuration' ng-class='getSelectedClass(3)' ng-show='getCanEdit()'><a ng-href='#/config'>Configuration</a></span>",
         restrict : "A",
         scope : {
@@ -27,21 +30,21 @@ recetarioModule.directive("mainMenu", [ '$window', function( $window ) {
         link: function (scope, element, attributes) {
             scope.getSelectedClass = function( linkId )
             {
-                var path = $window.location.pathname;
+                var path = $location.path();
                 var id = 0;
-                if ( path === "/html/index.html")
+                if ( path === "/home")
                 {
                     id = 0;
                 }
-                else if ( path === "/recipes/NewRecipe")
+                else if ( path === "/new" || path.indexOf("/edit") > -1 )
                 {
                     id = 1;
                 }
-                else if ( path === "/recipes/SynchronizeRecipes")
+                else if ( path === "/sync")
                 {
                     id = 2;
                 }
-                else if ( path === "/recetario/Configuration")
+                else if ( path === "/config")
                 {
                     id = 3;
                 }
@@ -150,6 +153,11 @@ recetarioModule.service("recipeService", ['$http', '$q', 'preferencesService', f
     this.save = function ( recipe )
     {
         return $http.post( baseUrl + "recipe", recipe );
+    }
+    
+    this.delete = function ( id )
+    {
+        return $http.delete( baseUrl + "recipe/"+ id );
     }
     
 }]);

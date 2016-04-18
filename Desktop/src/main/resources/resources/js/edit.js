@@ -1,4 +1,4 @@
-angular.module("recetario").controller( "EditController", [ '$scope', 'recipeService', '$routeParams', '$window', '$http', function( $scope, recipeService, $routeParams, $window, $http ) {
+angular.module("recetario").controller( "EditController", [ '$scope', 'recipeService', '$routeParams', '$window', '$http', '$location', '$timeout', function( $scope, recipeService, $routeParams, $window, $http, $location, $timeout ) {
     
     $scope.tag = "";
     $scope.tagString = "";
@@ -12,6 +12,8 @@ angular.module("recetario").controller( "EditController", [ '$scope', 'recipeSer
         });
         recipeService.save( $scope.recipe ).then( function( response ) {
             $scope.errorMessage = "Receta grabada correctamente";
+            $location.path("/home");
+            
         }, function( response ) {
             $scope.errorMessage = response.statusText;
         });
@@ -60,6 +62,15 @@ angular.module("recetario").controller( "EditController", [ '$scope', 'recipeSer
                         return total + ", " + item;
                     }    
                 });
+                new Vue({
+                  el: '#editor',
+                  data: {
+                    input: ( $scope.recipe.recipe)
+                  },
+                  filters: {
+                    marked: marked
+                  }
+                })
                 $scope.loadTags();
             }, function ( error ) {
                 this.errorMessage = error;
@@ -67,18 +78,17 @@ angular.module("recetario").controller( "EditController", [ '$scope', 'recipeSer
         }
         else
         {
+            new Vue({
+              el: '#editor',
+              data: {
+                input: ( $scope.recipe.recipe)
+              },
+              filters: {
+                marked: marked
+              }
+            })
             $scope.loadTags();
         }
-        
-        new Vue({
-          el: '#editor',
-          data: {
-            input: ( $scope.recipe.recipe)
-          },
-          filters: {
-            marked: marked
-          }
-        })
     }
     
     var resizeElements = function()
@@ -94,7 +104,9 @@ angular.module("recetario").controller( "EditController", [ '$scope', 'recipeSer
     
     var w = angular.element($window);
     w.bind( 'resize', resizeElements );
-    $scope.$watch('$viewContentLoaded', resizeElements );
+    $scope.$watch('$viewContentLoaded', function(){
+        $timeout( resizeElements, 100 );
+    } );
     
     init();
 }]);
