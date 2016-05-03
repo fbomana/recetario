@@ -23,7 +23,7 @@ angular.module("recetario").controller( "EditController", [ '$scope', 'recipeSer
         $http({
             method: "GET",
             url: "http://localhost:8080/services/tags",
-            params : { related : 1, tags : $scope.tagString }
+            params : { related : 0, tags : $scope.tagString }
               }).then( function( response ) {
             console.log("[INFO] tags recovery ok function. Recovered " + response.data.length );
             $scope.avaliableTags = response.data;
