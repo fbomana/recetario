@@ -21,7 +21,7 @@ recetarioModule.directive("mainMenu", [ '$location', function( $location ) {
     return { 
         template : "<span id='search' ng-class='getSelectedClass(0)'><a ng-href='#/home'>Search Recipes</a></span>" +
                 "<span id='new' ng-class='getSelectedClass(1)' ng-show='getCanEdit()'><a ng-href='#/new'>New Recipe</a></span>" +
-                "<span id='synchronize' ng-class='getSelectedClass(2)' ng-show='getCanEdit()'><a ng-href='/recipes/SynchronizeRecipes'>Synchronize</a></span>" + 
+                "<span id='synchronize' ng-class='getSelectedClass(2)' ng-show='getCanEdit()'><a ng-href='#/sync'>Synchronize</a></span>" + 
                 "<span id='configuration' ng-class='getSelectedClass(3)' ng-show='getCanEdit()'><a ng-href='#/config'>Configuration</a></span>",
         restrict : "A",
         scope : {
@@ -170,6 +170,13 @@ recetarioModule.controller("recetarioController", ['$scope', '$location', 'prefe
         $scope.preferences = pref;
         $scope.canEdit =  pref.mode === 0 || ( pref.mode === 1 && ( $location.host() === "localhost" || $location.host() === "127.0.0.1"));
         $scope.recetarioJSinitialized = true;
+    });
+    
+    $scope.$on("$locationChangeStart", function(event, next, current) {
+        if ( !$scope.canEdit && next.indexOf("home") == -1 )
+        {
+            event.preventDefault();
+        }
     });
 }]);
        
