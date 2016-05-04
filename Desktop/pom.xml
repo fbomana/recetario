@@ -46,7 +46,7 @@
     <build>
         <resources>
             <resource>
-                <directory>src/resources</directory>
+                <directory>src/main/resources</directory>
                 <excludes>
                     <exclude>resources/node_modules/</exclude>
                     <exclude>resources/js/angular.js</exclude>

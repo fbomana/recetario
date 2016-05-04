@@ -42,7 +42,7 @@ public class RecipeSearch extends JSONServiceCommand
             if ( request.getParameter("importList") != null && !"".equals( request.getParameter("importList")))
             {
                 List<String> shareIds = Utils.splitString(request.getParameter("importList"), false );
-                recipes = new RecipeDAO().shareIdSearch( connection, shareIds );
+                recipes = RecipeDAO.getInstance().shareIdSearch( connection, shareIds );
                 JsonArrayBuilder builder = Json.createArrayBuilder();
                 for ( Recipe recipe : recipes )
                 {
@@ -56,11 +56,11 @@ public class RecipeSearch extends JSONServiceCommand
                 List<String> tags = Utils.string2tags( request.getParameter("tags"));
                 if ( request.getParameter("page") != null && request.getParameter("pageSize") != null )
                 {
-                    result = new RecipeDAO().search(connection, tags, !"1".equals( request.getParameter("searchType")), new Integer( request.getParameter("page")), new Integer ( request.getParameter("pageSize")) );
+                    result = RecipeDAO.getInstance().search(connection, tags, !"1".equals( request.getParameter("searchType")), new Integer( request.getParameter("page")), new Integer ( request.getParameter("pageSize")) );
                 }
                 else
                 {
-                    result = new RecipeDAO().search(connection, tags, !"1".equals( request.getParameter("searchType")), null, null );
+                    result = RecipeDAO.getInstance().search(connection, tags, !"1".equals( request.getParameter("searchType")), null, null );
                 }
                 Json.createWriter( out ).write( result.toJSON());
             }

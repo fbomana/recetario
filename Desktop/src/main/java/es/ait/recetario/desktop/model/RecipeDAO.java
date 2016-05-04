@@ -25,8 +25,23 @@ import java.util.logging.Logger;
  */
 public class RecipeDAO
 {
-
+    private static RecipeDAO instance;
+    
+    
     private Logger logger = Logger.getLogger(getClass().getName());
+    
+    private RecipeDAO()
+    {
+    }
+
+    public static RecipeDAO getInstance()
+    {
+        if ( instance == null )
+        {
+            instance = new RecipeDAO();
+        }
+        return instance;
+    }
     
     /**
      * Stores a new recipe in the BBDD.
@@ -35,7 +50,7 @@ public class RecipeDAO
      * @param recipe the recipe to be stored. The recipeId value it's calculated during insert and updated in the recipe object.
      * @throws SQLException 
      */
-    public void create ( Connection connection, Recipe recipe ) throws SQLException
+    public synchronized void create ( Connection connection, Recipe recipe ) throws SQLException
     {
         create( connection, recipe, false );
     }
@@ -47,7 +62,7 @@ public class RecipeDAO
      * @param recipe the recipe to be stored. The recipeId value it's calculated during insert and updated in the recipe object.
      * @throws SQLException 
      */
-    private void create ( Connection connection, Recipe recipe, boolean importRecipe ) throws SQLException
+    private synchronized void create ( Connection connection, Recipe recipe, boolean importRecipe ) throws SQLException
     {
         try
             ( PreparedStatement ps = connection.prepareStatement("insert into recipe ( recipe_title, recipe, recipe_date, recipe_update, recipe_origin, recipe_share_id ) values ( ?, ?, ?, ?, ?, ? )", new String[]{"RECIPE_ID"}))
@@ -82,7 +97,7 @@ public class RecipeDAO
      * @param recipe
      * @throws SQLException 
      */
-    public void update ( Connection connection, Recipe recipe ) throws SQLException
+    public synchronized void update ( Connection connection, Recipe recipe ) throws SQLException
     {
         update( connection, recipe, false );
     }
@@ -93,7 +108,7 @@ public class RecipeDAO
      * @param recipe
      * @throws SQLException 
      */
-    private void update ( Connection connection, Recipe recipe, boolean importRecipe ) throws SQLException
+    private synchronized void update ( Connection connection, Recipe recipe, boolean importRecipe ) throws SQLException
     {
         try
             ( PreparedStatement ps = connection.prepareStatement("update recipe set recipe_title=?, recipe=?,"
@@ -126,7 +141,7 @@ public class RecipeDAO
      * @param recipe
      * @throws SQLException 
      */
-    public void importRecipe( Connection connection, Recipe recipe ) throws SQLException
+    public synchronized void importRecipe( Connection connection, Recipe recipe ) throws SQLException
     {
         int localId = getLocalId(connection, recipe.getRecipeShareId());
         if ( localId != -1 )
@@ -147,7 +162,7 @@ public class RecipeDAO
      * @return
      * @throws SQLException 
      */
-    public int getLocalId( Connection connection, String shareId ) throws SQLException
+    public synchronized int getLocalId( Connection connection, String shareId ) throws SQLException
     {
         try (PreparedStatement ps = connection.prepareStatement( "select recipe_id from recipe where recipe_share_id = ?"))
         {
@@ -163,7 +178,7 @@ public class RecipeDAO
         }
     }
     
-    public void delete ( Connection connection, int id  ) throws SQLException
+    public synchronized void delete ( Connection connection, int id  ) throws SQLException
     {
         new TagDAO().deleteRecipeTags( connection, id );
         try
@@ -182,7 +197,7 @@ public class RecipeDAO
      * @return
      * @throws SQLException 
      */
-    public RecipeResult search( Connection connection, List<String> tags, boolean inclusive, Integer page, Integer pageSize ) throws SQLException
+    public synchronized RecipeResult search( Connection connection, List<String> tags, boolean inclusive, Integer page, Integer pageSize ) throws SQLException
     {
         if ( inclusive )
         {
@@ -199,7 +214,7 @@ public class RecipeDAO
      * @return return a list with all the recipes but whihtout the recipe.
      * @throws SQLException 
      */
-    private RecipeResult inclusiveSearch( Connection connection, List<String> tags, Integer page, Integer pageSize ) throws SQLException
+    private synchronized RecipeResult inclusiveSearch( Connection connection, List<String> tags, Integer page, Integer pageSize ) throws SQLException
     {
         if ( tags == null )
         {
@@ -309,7 +324,7 @@ public class RecipeDAO
      * @return return a list with all the recipes but whihtout the recipe.
      * @throws SQLException 
      */
-    private RecipeResult exclusiveSearch( Connection connection, List<String> tags, Integer page, Integer pageSize ) throws SQLException
+    private synchronized RecipeResult exclusiveSearch( Connection connection, List<String> tags, Integer page, Integer pageSize ) throws SQLException
     {
         if ( tags == null )
         {
@@ -443,7 +458,7 @@ public class RecipeDAO
         return result;
     }
 
-    public List<Recipe> shareIdSearch( Connection connection, List<String> shareIds ) throws SQLException
+    public synchronized List<Recipe> shareIdSearch( Connection connection, List<String> shareIds ) throws SQLException
     {
         String sql = "select a.recipe_id, a.recipe_title, a.recipe, a.recipe_date, "
             + "a.recipe_update, a.recipe_origin, a.recipe_share_id, b.tag from recipe a, recipe_tags b where "
@@ -494,7 +509,7 @@ public class RecipeDAO
      * @return
      * @throws SQLException 
      */
-    public Recipe search( Connection connection, int recipeId ) throws SQLException
+    public synchronized Recipe search( Connection connection, int recipeId ) throws SQLException
     {
         String sql = "select a.*, b.tag from recipe a, recipe_tags b where a.recipe_id = b.recipe_id and a.recipe_id = ?";
         Recipe result = null;
@@ -522,7 +537,7 @@ public class RecipeDAO
      * @param readClob
      * @return 
      */
-    private Recipe readRecipe( ResultSet rs, boolean readClob ) throws SQLException
+    private synchronized Recipe readRecipe( ResultSet rs, boolean readClob ) throws SQLException
     {
         Recipe recipe = new Recipe();
         recipe.setRecipeId( rs.getInt("recipe_id"));

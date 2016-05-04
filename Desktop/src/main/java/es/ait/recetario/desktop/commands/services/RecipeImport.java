@@ -34,7 +34,7 @@ public class RecipeImport extends JSONServiceCommand
         try ( Connection connection = BBDDManager.getInstance(null).getConnection())
         {
             connection.setAutoCommit( false );
-            RecipeDAO dao = new RecipeDAO();
+            RecipeDAO dao = RecipeDAO.getInstance();
             JsonReader reader = Json.createReader( request.getInputStream());
             try
             {

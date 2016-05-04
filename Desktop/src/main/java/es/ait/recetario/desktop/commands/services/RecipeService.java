@@ -34,7 +34,7 @@ public class RecipeService extends JSONServiceCommand
     {
         try ( Connection connection = BBDDManager.getInstance(null).getConnection())
         {
-            RecipeDAO dao = new RecipeDAO();
+            RecipeDAO dao = RecipeDAO.getInstance();
             String id = getUrlParam( 1 );
             if ( id == null)
             {
@@ -66,7 +66,7 @@ public class RecipeService extends JSONServiceCommand
     {
         try ( Connection connection = BBDDManager.getInstance(null).getConnection())
         {
-            RecipeDAO dao = new RecipeDAO();
+            RecipeDAO dao = RecipeDAO.getInstance();
             JsonReader reader = Json.createReader( request.getInputStream());
             try
             {
@@ -119,7 +119,7 @@ public class RecipeService extends JSONServiceCommand
     {
         try ( Connection connection = BBDDManager.getInstance(null).getConnection())
         {
-            RecipeDAO dao = new RecipeDAO();
+            RecipeDAO dao = RecipeDAO.getInstance();
 
             String id = getUrlParam( 1 );
             if ( id == null)

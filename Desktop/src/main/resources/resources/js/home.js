@@ -20,12 +20,12 @@ recetarioModule.controller("HomeController", ['$scope', '$http', '$rootScope', '
             console.log("Error during tag recover: " + response.status );
             $scope.tag = "";
         });
-    }
+    };
     
     $scope.addTag = function() {
-        if ( $scope.tag != "")
+        if ( $scope.tag !== "")
         {
-            if ( $scope.tagString != "" )
+            if ( $scope.tagString !== "" )
             {
                 $scope.tagString += ", ";        
             }
@@ -33,7 +33,7 @@ recetarioModule.controller("HomeController", ['$scope', '$http', '$rootScope', '
             $scope.loadTags();
             $scope.resetRecipes();
         }
-    }
+    };
     
     $scope.searchRecipes = function()  {
         recipeService.getRecipes( $scope.tagString, $scope.searchType, $scope.page + 1, $scope.preferences.recipesPerPage ).
@@ -46,8 +46,8 @@ recetarioModule.controller("HomeController", ['$scope', '$http', '$rootScope', '
                 $scope.page = data.page;
                 $scope.totalPages = data.totalPages;
         }, function ( response ){
-        })
-    }
+        });
+    };
     
     $scope.openDetail = function( recipe )
     {
@@ -58,18 +58,18 @@ recetarioModule.controller("HomeController", ['$scope', '$http', '$rootScope', '
             $scope.recipeDetail = false;
             $scope.showDetail = false;
         });
-    }
+    };
     
     $scope.closeDetail = function() {
         $scope.showDetail = false;
-    }
+    };
     
     $scope.resetRecipes = function() {
         $scope.page = 0;
         $scope.totalPages = 0;
         $scope.recipes = [];
         $scope.searchRecipes();
-    }
+    };
     
     $scope.delete = function( id ) {
         recipeService.delete( id ).then( function( response ) {
@@ -77,7 +77,7 @@ recetarioModule.controller("HomeController", ['$scope', '$http', '$rootScope', '
         }, function( response ) {
             console.log( "error");
         });
-    }
+    };
     
     // Retrasamon la inicialización a que las preferencias estén cargadas.
     if ( $scope.recetarioJSinitialized )

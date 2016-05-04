@@ -50,7 +50,7 @@ public class Recipe
         {
             recipeDate = sdf.parse( json.getString("date"));
         }
-        if ( json.containsKey("uopdate"))
+        if ( json.containsKey("update"))
         {
             recipeUpdate = sdf.parse( json.getString( "update"));
         }

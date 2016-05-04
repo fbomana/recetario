@@ -48,7 +48,7 @@ public class RecipeDAOTest extends TestCase
      */
     public void testCrud() throws Exception
     {
-        RecipeDAO dao = new RecipeDAO();
+        RecipeDAO dao = RecipeDAO.getInstance();
         
         List<String> test1Tags = new ArrayList<>();
         test1Tags.add( "testTag1" );
@@ -94,7 +94,7 @@ public class RecipeDAOTest extends TestCase
     
     public void testInclusiveSearch() throws Exception
     {
-        RecipeDAO dao = new RecipeDAO();
+        RecipeDAO dao = RecipeDAO.getInstance();
         List<String> test1Tags = new ArrayList<>();
         test1Tags.add( "testTag1" );
         test1Tags.add( "testTag2" );
@@ -166,7 +166,7 @@ public class RecipeDAOTest extends TestCase
 
     public void testExclusiveSearch() throws Exception
     {
-        RecipeDAO dao = new RecipeDAO();
+        RecipeDAO dao = RecipeDAO.getInstance();
         List<String> test1Tags = new ArrayList<>();
         test1Tags.add( "testTag1" );
         test1Tags.add( "testTag2" );
