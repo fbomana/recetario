@@ -82,7 +82,7 @@ public abstract class JSONServiceCommand extends Command
         if ( this.getClass().isAnnotationPresent( CommandPath.class ))
         {
             String base = this.getClass().getAnnotation( CommandPath.class ).path();
-            String resource = request.getRequestURI().substring(base.length());
+            String resource = request.getRequestURI().replaceAll("//", "/" ).substring(base.length() );
             StringTokenizer st = new StringTokenizer( resource, "/", false  );
             while( st.hasMoreTokens() )
             {

@@ -78,10 +78,10 @@ public class RecetarioIcon implements ActionListener
                     recetario.exit();
                     break;
                 case "recipes":
-                    Utils.browse("http://localhost:" + recetario.getPort() + "/recipes/SearchRecipes");
+                    Utils.browse("http://localhost:" + recetario.getPort() + "/html/index.html");
                     break;
                 case "newRecipe":
-                    Utils.browse("http://localhost:" + recetario.getPort() + "/recipes/NewRecipe");
+                    Utils.browse("http://localhost:" + recetario.getPort() + "/html/index.html#/new");
                     break;
             }
         }

@@ -14,6 +14,9 @@ recetarioModule.config( ['$routeProvider','$httpProvider', function($routeProvid
     }).when ('/config', {
         templateUrl : 'config.html',
         controller : 'ConfigController'
+    }).when ('/sync', {
+        templateUrl : 'sync.html',
+        controller : 'SyncController'
     }).otherwise('/home');
 }]);
 
@@ -114,12 +117,12 @@ recetarioModule.service('preferencesService', [ '$http', '$timeout', '$q', funct
 }]);
 
 recetarioModule.service("recipeService", ['$http', '$q', 'preferencesService', function( $http, $q, preferencesService ) {
-    var baseUrl = "http://localhost:8080/services/";
+    var baseUrl = "http://localhost:8080";
     
-    this.getRecipe = function( id )
+    this.getRecipe = function( id, base )
     {
         var deferred = $q.defer();
-        $http.get( baseUrl + "recipe/" + id ).then( function(response) {
+        $http.get( ( base != undefined ? base : baseUrl )  + "/services/recipe/" + id ).then( function(response) {
             deferred.resolve( response.data )
         }, function ( response ) {
             console.log("Error " + response.status);
@@ -128,12 +131,12 @@ recetarioModule.service("recipeService", ['$http', '$q', 'preferencesService', f
         return deferred.promise;
     }
     
-    this.getRecipes = function ( tags, searchType, page, recipesPerPage )
+    this.getRecipes = function ( tags, searchType, page, recipesPerPage, base )
     {
         var deferred = $q.defer();                                                          
         $http({
-                method : "GET",
-                url :  baseUrl + "recipe/search",
+                method : "POST",
+                url :  ( base != undefined ? base : baseUrl ) + "/services/recipe/search",
                 params : {
                     page : page,
                     pageSize : recipesPerPage,
@@ -145,19 +148,24 @@ recetarioModule.service("recipeService", ['$http', '$q', 'preferencesService', f
                 deferred.resolve( response.data );
             }, function ( response ){
                 console.log("Error during recipe recover: " + response.status );
-                deferred.rejcet( null );
+                deferred.reject( response );
         });
         return deferred.promise;
     }
     
     this.save = function ( recipe )
     {
-        return $http.post( baseUrl + "recipe", recipe );
+        return $http.put( baseUrl + "/services/recipe", recipe );
     }
     
     this.delete = function ( id )
     {
-        return $http.delete( baseUrl + "recipe/"+ id );
+        return $http.delete( baseUrl + "/services/recipe/"+ id );
+    }
+    
+    this.import = function( recipe )
+    {
+        return $http.post( baseUrl + "/services/recipe/import", recipe );
     }
     
 }]);
@@ -173,10 +181,10 @@ recetarioModule.controller("recetarioController", ['$scope', '$location', 'prefe
     });
     
     $scope.$on("$locationChangeStart", function(event, next, current) {
-        if ( !$scope.canEdit && next.indexOf("home") == -1 )
+/*        if ( !$scope.canEdit && next.indexOf("home") == -1 )
         {
             event.preventDefault();
-        }
+        }*/
     });
 }]);
        

@@ -30,6 +30,7 @@ public class CommandFactory
 	
     public Command getCommand( String resource ) throws ClassNotFoundException, InstantiationException, IllegalAccessException
     {
+        resource = resource.replaceAll( "//", "/");
     	if ( commands.get( resource ) != null )
     	{
             return ( Command )commands.get( resource ).newInstance();

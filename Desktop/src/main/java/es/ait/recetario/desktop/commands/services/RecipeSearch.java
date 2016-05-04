@@ -31,7 +31,7 @@ public class RecipeSearch extends JSONServiceCommand
 {
 
     @Override
-    public void processRequest(HttpServletRequest request, HttpServletResponse response, PrintWriter out) throws IOException, ServletException
+    public void post(HttpServletRequest request, HttpServletResponse response, PrintWriter out) throws IOException, ServletException
     {
         
         try

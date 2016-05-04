@@ -1,0 +1,46 @@
+<link rel="stylesheet" href="../css/sync.css">
+<div id="content">
+<form name="fsync">
+    <label for="baseUrl">Source repository base URL:</label>
+    <input type="url" nama="baseUrl" id="baseUrl" ng-model="base" ng-model-options="{ updateOn: 'default blur', debounce: { 'default': 1000, 'blur': 0 }}" ng-change="loadTags();"><br>
+    <input type="radio" id="radioAll" name="radioAll" value="all" ng-model="syncAll" ng-disabled="base==''">
+    <label for="radioAll">Synchronize All Recipes</label><br>
+    <input type="radio" id="radioSome" name="radioAll" value="some" ng-model="syncAll" ng-disabled="base==''">
+    <label for="radioSome">Synchornize Some recipes</label>
+    <blockquote>
+        <label for="tags">Tags:
+        <input type="text" value="" id="tags" name="tags" pattern="(?:[a-zA-Z0-9\-_]+(?:\s*,\s*[a-zA-Z0-9\-_]+)*)" ng-model="tagString" ng-model-options="{ updateOn: 'default blur', debounce: { 'default': 1000, 'blur': 0 }}" ng-change="loadTags();resetRecipes();" ng-disabled="base=='' || syncAll=='all'"/>
+        </label>
+        <p class="error"ng-show="error != ''">{{error}}</p>
+        <select id="availableTags" ng-model="tag" ng-options="tag for tag in tags" ng-change="addTag()" ng-disabled="base=='' || syncAll=='all'"></select>
+        <input type="button" value="search" ng-click="searchRecipes();" ng-disabled="base=='' || syncAll=='all'"><br>
+        <table border="0">
+            <thead>
+            <tr>
+                <th>Available Recipes</th>
+                <th></th>
+                <th>Selected recipes</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr>
+                <td>
+                    <select name="availableRecipes" ng-multiple="true" multiple ng-model="availableRecipesSel" ng-options="recipe.title for recipe in availableRecipes" ng-disabled="base=='' || syncAll=='all'"></select>
+                </td>
+                <td>
+                    <input type="button" value=">>" ng-click="selectRecipes();"><br>
+                    <br>
+                    <input type="button" value="<<" ng-click="unselectRecipes();"><br>
+                </td>
+                <td>
+                    <select name="selectedRecipes" ng-multiple="true" multiple ng-model="selectedRecipesSel" ng-options="recipe.title for recipe in selectedRecipes" ng-disabled="base=='' || syncAll=='all'"></select>
+                    
+                </td>
+            </tr>
+            </tbody>
+        </table>
+    </blockquote>
+
+    <input type="button" value="synchronize" ng-disabled="base=='' || (syncAll === 'some' && selectedRecipes.length == 0 )" ng-click="importRecipes()">
+</form>
+</div>

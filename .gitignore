@@ -34,3 +34,6 @@ Desktop/.settings/
 #gulp and nodejs
 Desktop/src/main/resources/resources/node_modules/
 Desktop/src/main/resources/resources/Gulpfile.js
+
+#BBDD para pruebas
+data
