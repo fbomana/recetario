@@ -40,6 +40,9 @@
             </tbody>
         </table>
     </blockquote>
+    <div id="countdown" ng-show="recipesToImport !== recipesImported">
+        {{recipesImported}} recipes imported of {{recipesToImport}}
+    </div>
 
     <input type="button" value="synchronize" ng-disabled="base=='' || (syncAll === 'some' && selectedRecipes.length == 0 )" ng-click="importRecipes()">
 </form>

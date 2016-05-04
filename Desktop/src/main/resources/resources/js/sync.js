@@ -93,6 +93,7 @@ angular.module("recetario").controller("SyncController", ['$scope', 'recipeServi
     
     $scope.continueImport = function( recipes )
     {
+        $scope.recipesImported = 0;
         $scope.recipesToImport = recipes.length;
         for ( var i = 0; i < recipes.length; i++ )
         {
