@@ -10,7 +10,7 @@ recetarioModule.controller("HomeController", ['$scope', '$http', '$rootScope', '
     $scope.loadTags = function() {
         $http({
             method: "GET",
-            url: "http://localhost:8080/services/tags",
+            url: "/services/tags",
             params : { related : 1, tags : $scope.tagString }
               }).then( function( response ) {
             console.log("[INFO] tags recovery ok function. Recovered " + response.data.length );

@@ -43,4 +43,16 @@
         <maven.compiler.source>1.7</maven.compiler.source>
         <maven.compiler.target>1.7</maven.compiler.target>
     </properties>
+    <build>
+        <resources>
+            <resource>
+                <directory>src/resources</directory>
+                <excludes>
+                    <exclude>resources/node_modules/</exclude>
+                    <exclude>resources/js/angular.js</exclude>
+                    <exclude>resources/Gulpfile.js</exclude>
+                </excludes>
+            </resource>
+        </resources>
+    </build>
 </project>

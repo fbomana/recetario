@@ -100,7 +100,7 @@ recetarioModule.service('preferencesService', [ '$http', '$timeout', '$q', funct
     
     this.getPreferences = function() {                                                   
         var deferred = $q.defer();
-        $http.get( "http://localhost:8080/services/preferences").then( function( response ) 
+        $http.get( "/services/preferences").then( function( response ) 
         {
             thePreferences = response.data;
             deferred.resolve( thePreferences );
@@ -112,12 +112,12 @@ recetarioModule.service('preferencesService', [ '$http', '$timeout', '$q', funct
     }
     
     this.save = function( preferences ) {
-        return $http.post("http://localhost:8080/services/preferences", preferences );
+        return $http.post("/services/preferences", preferences );
     }
 }]);
 
 recetarioModule.service("recipeService", ['$http', '$q', 'preferencesService', function( $http, $q, preferencesService ) {
-    var baseUrl = "http://localhost:8080";
+    var baseUrl = "";
     
     this.getRecipe = function( id, base )
     {
