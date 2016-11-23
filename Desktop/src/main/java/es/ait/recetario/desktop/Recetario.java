@@ -61,6 +61,8 @@ public class Recetario
     
     private void findPort()
     {
+        Preferences preferences = Preferences.getInstance();
+        port = Integer.parseInt( preferences.getInitialPort());
         while ( !available( port ) )
         {
             port ++;

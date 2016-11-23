@@ -10,7 +10,6 @@ import java.io.FileInputStream;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.math.BigDecimal;
 import java.util.Properties;
 import java.util.logging.LogManager;
 import javax.json.Json;
@@ -34,6 +33,7 @@ public class Preferences
     private int recipeBackupInterval = 120000;
     private ReadOnlyMode mode;
     private int recipesPerPage = 9;
+    private String initialPort = null;
     
     /**
      * Default constructor. It's private to force use the singleton pattern.
@@ -93,6 +93,7 @@ public class Preferences
             recipeBackupInterval = Integer.parseInt( prop.getProperty("recipeBackupInterval", "120000" ));
             mode = ReadOnlyMode.getMode( prop.getProperty("mode", "1"));
             recipesPerPage = Integer.parseInt( prop.getProperty("recipesPerPage", "9"));
+            setInitialPort(prop.getProperty("initialPort", "8080"));
         }
         catch ( Exception e )
         {
@@ -121,6 +122,9 @@ public class Preferences
             writer.write("# Recetario configuration file\n");
             writer.write("###\n");
             writer.write("\n");
+            writer.write("# Initial HTTP Port\n");
+            writer.write("initialPort=" + ( getInitialPort() != null ? getInitialPort() : "8080")+ "\n");
+            writer.write("\n");
             writer.write("# Recetario Name\n");
             writer.write("recetarioName=" + ( recetarioName != null ? recetarioName : "")+ "\n");
             writer.write("\n");
@@ -131,6 +135,7 @@ public class Preferences
             writer.write("mode=" + mode.getMode() + "\n");
             writer.write("# Recipes per page of results\n");
             writer.write("recipesPerPage=" + recipesPerPage + "\n");
+            
         }
         catch ( IOException e )
         {
@@ -159,6 +164,7 @@ public class Preferences
         builder.add( "recipeBackupInterval", recipeBackupInterval );
         builder.add( "mode", mode.getMode());
         builder.add("recipesPerPage", recipesPerPage );
+        builder.add("initialPort", getInitialPort());
         return builder.build();
     }
     
@@ -244,5 +250,19 @@ public class Preferences
     public void setRecipesPerPage(int recipesPerPage)
     {
         this.recipesPerPage = recipesPerPage;
+    }
+
+    /**
+     * @return the initialPort
+     */
+    public String getInitialPort() {
+        return initialPort;
+    }
+
+    /**
+     * @param initialPort the initialPort to set
+     */
+    public void setInitialPort(String initialPort) {
+        this.initialPort = initialPort;
     }
 }
